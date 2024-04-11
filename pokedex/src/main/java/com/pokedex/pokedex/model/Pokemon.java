@@ -2,20 +2,26 @@ package com.pokedex.pokedex.model;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import java.util.ArrayList;
+import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
 public class Pokemon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "number")
     private Long id;
-    private int numero;
-    private String nome;
-    private String descricao;
-    private ArrayList<Pokemon> listaEvolucoes;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "imageUrl")
+    private String imageUrl;
+
+    @Column(name = "description")
+    private String description;
+
+    @Column(name = "evolutions")
+    private List<String> evolutionsList;
 }

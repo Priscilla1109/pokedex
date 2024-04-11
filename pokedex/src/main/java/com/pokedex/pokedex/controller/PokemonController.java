@@ -1,27 +1,62 @@
 package com.pokedex.pokedex.controller;
 
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
-import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonDTO;
-import com.pokedex.pokedex.repository.PokemonRepository;
+import com.pokedex.pokedex.mapper.PokemonMapper;
+import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/APIs/pokedex")
 public class PokemonController {
     private final PokeApiService pokeApiService;
+    private final PokemonService pokemonService;
 
-    public PokemonController(PokeApiService pokemonService) {
-        this.pokeApiService = pokemonService;
+    public PokemonController(PokeApiService pokeApiService, PokemonService pokemonService1) {
+        this.pokeApiService = pokeApiService;
+        this.pokemonService = pokemonService1;
     }
 
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")
-    public ResponseEntity<PokemonDTO> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
-        PokemonDTO pokemon = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+    public ResponseEntity<PokemonResquest> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
+        PokemonResquest pokemon = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         return ResponseEntity.ok(pokemon);
+    }
+
+    //Endpoint de Adição de Pokemons:
+    @PostMapping("/add")
+    public ResponseEntity<String> addNewPokemon(@Valid @RequestBody PokemonResquest pokemonResquest){
+        Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
+        pokemonService.addNewPokemon(pokemonResquest);
+
+        return ResponseEntity.ok("Pokemon adicionado com sucesso!");
+    }
+
+    //Endpoint de Listagem de Pokemons:
+    @GetMapping("/pokemons")
+    public ResponseEntity<PokemonPageResponse> listPokemons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize){
+        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        Page<Pokemon> pokemonPage = pokemonService.listPokemons(page, pageSize);
+
+        PokemonPageResponse response = new PokemonPageResponse();
+        response.setPokemons(pokemonPage.getContent());
+        response.setMeta(new Meta(
+                pokemonPage.getNumber(),
+                pokemonPage.getSize(),
+                pokemonPage.getTotalPages(),
+                pokemonPage.getTotalElements()
+        ));
+
+        return ResponseEntity.ok(response);
     }
 }
