@@ -16,13 +16,10 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/APIs/pokedex")
 public class PokemonController {
-    private final PokeApiService pokeApiService;
-    private final PokemonService pokemonService;
+    private PokeApiService pokeApiService;
+    private PokemonService pokemonService;
 
-    public PokemonController(PokeApiService pokeApiService, PokemonService pokemonService1) {
-        this.pokeApiService = pokeApiService;
-        this.pokemonService = pokemonService1;
-    }
+
 
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")
@@ -58,5 +55,12 @@ public class PokemonController {
         ));
 
         return ResponseEntity.ok(response);
+    }
+
+    //Endpoint de Deleção de Pokemons:
+    @DeleteMapping("{number}")
+    public ResponseEntity<String> deletarPokemon(@PathVariable Long number){
+        pokemonService.deletPokemon(number);
+        return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
     }
 }

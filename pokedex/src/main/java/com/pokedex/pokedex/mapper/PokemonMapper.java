@@ -8,7 +8,7 @@ public class PokemonMapper {
 
     public static Pokemon toDomain(PokemonResquest pokemonResquest){
         Pokemon pokemon = new Pokemon();
-        pokemon.setId(pokemonResquest.getNumber());
+        pokemon.setNumber(pokemonResquest.getNumber());
         pokemon.setName(pokemonResquest.getName());
         pokemon.setDescription(pokemonResquest.getDescription());
         pokemon.setImageUrl(pokemonResquest.getImageUrl());
@@ -19,7 +19,7 @@ public class PokemonMapper {
 
     public static PokemonResponse toResponse(Pokemon pokemon) {
         PokemonResponse response = new PokemonResponse();
-        response.setNumber(pokemon.getId());
+        response.setNumber(pokemon.getNumber());
         response.setName(pokemon.getName());
         response.setDescription(pokemon.getDescription());
         response.setImageUrl(pokemon.getImageUrl());

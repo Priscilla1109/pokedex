@@ -11,7 +11,7 @@ public class Pokemon {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "number")
-    private Long id;
+    private Long number;
 
     @Column(name = "name")
     private String name;

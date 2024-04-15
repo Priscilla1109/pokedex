@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import java.util.List;
 
 
-//Classe que contém os campos necessários para uma ação com relação ao Pokemon
+//Classe que contém os campos necessários do payload dos pokemons
 @Data
 public class PokemonResquest {
     @NotBlank(message = "invalid number")
