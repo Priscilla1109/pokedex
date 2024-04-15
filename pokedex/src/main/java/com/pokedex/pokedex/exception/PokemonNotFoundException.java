@@ -1,6 +1,6 @@
 package com.pokedex.pokedex.exception;
 
-public class PokemonNotFoundException extends Throwable {
-    public PokemonNotFoundException(String s) {
+public class PokemonNotFoundException extends RuntimeException {
+    public PokemonNotFoundException(String mensagem) {
     }
 }

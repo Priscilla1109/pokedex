@@ -12,7 +12,7 @@ public class PokemonMapper {
         pokemon.setName(pokemonResquest.getName());
         pokemon.setDescription(pokemonResquest.getDescription());
         pokemon.setImageUrl(pokemonResquest.getImageUrl());
-        pokemon.setEvolutionsList(pokemonResquest.getEvolutions());
+//        pokemon.setEvolutionsList(pokemonResquest.getEvolutions());
 
         return pokemon;
     }
@@ -23,7 +23,7 @@ public class PokemonMapper {
         response.setName(pokemon.getName());
         response.setDescription(pokemon.getDescription());
         response.setImageUrl(pokemon.getImageUrl());
-        response.setEvolutions(pokemon.getEvolutionsList());
+//        response.setEvolutions(pokemon.getEvolutionsList());
 
         return response;
     }

@@ -22,6 +22,6 @@ public class Pokemon {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "evolutions")
-    private List<String> evolutionsList;
+//    @Column(name = "evolutions")
+//    private List<String> evolutionsList;
 }

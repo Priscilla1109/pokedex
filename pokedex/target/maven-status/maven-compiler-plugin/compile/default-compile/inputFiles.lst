@@ -1,0 +1,15 @@
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\repository\PokemonRepository.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\service\PokeApiService.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\PokedexApplication.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\exception\PokemonNotFoundException.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\service\PokemonService.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\model\Meta.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\model\PokemonPageResponse.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\Advice\PokemonHandlerException.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\exception\InternalServerErrorException.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\mapper\PokemonMapper.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\model\Pokemon.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\model\PokemonResponse.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\controller\PokemonController.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\exception\BadRequestException.java
+C:\Users\priscilla.fonseca\APIs\Estudo\pokedex\pokedex\src\main\java\com\pokedex\pokedex\model\PokemonResquest.java
