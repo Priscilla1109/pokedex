@@ -1,4 +1,4 @@
-package Advice;
+package com.pokedex.pokedex.advice;
 
 import com.pokedex.pokedex.exception.BadRequestException;
 import com.pokedex.pokedex.exception.InternalServerErrorException;
