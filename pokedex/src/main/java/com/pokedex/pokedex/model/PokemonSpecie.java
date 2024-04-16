@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 public class PokemonSpecie {
     private String nome;
     private String url;
-    private EvoluchionChain evoluchionChain;
+    private EvolutionChain evolutionChain;
 }

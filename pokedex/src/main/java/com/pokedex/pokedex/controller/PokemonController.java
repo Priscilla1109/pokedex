@@ -63,4 +63,16 @@ public class PokemonController {
         pokemonService.deletPokemon(number);
         return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
     }
+
+    @GetMapping("/species/{name}")
+    public ResponseEntity<PokemonSpecie> getSpeciesByName(@PathVariable String name){
+        PokemonSpecie species = pokeApiService.getSpecieByName(name);
+        return ResponseEntity.ok(species);
+    }
+
+    @GetMapping("/evolution-chain/{number}")
+    public ResponseEntity<EvolutionChain> getEvolutionChainByUrl(@PathVariable String url){
+        EvolutionChain chain = pokeApiService.getChain(url);
+        return ResponseEntity.ok(chain);
+    }
 }
