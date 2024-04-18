@@ -33,11 +33,11 @@ public class PokeApiService {
     }
 
     //Busca Pokemon pelo id
-    public PokemonResquest getPokemonById(Long id) throws PokemonNotFoundException {
+    public PokemonResquest getPokemonByNumber(Long number) throws PokemonNotFoundException {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
         ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + id, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
-            throw new PokemonNotFoundException("Pokemon not found with id: " + id);
+            throw new PokemonNotFoundException("Pokemon not found with id: " + number);
         }
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()); //converte a resposya da API para um JSON
@@ -51,7 +51,7 @@ public class PokeApiService {
     public PokemonResquest getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {
         if (StringUtils.isNumeric(nameOrNumber)){
             Long id = Long.parseLong(nameOrNumber);
-            return getPokemonById(id);
+            return getPokemonByNumber(id);
         } else {
             ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + nameOrNumber.toLowerCase(), String.class);
             if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){

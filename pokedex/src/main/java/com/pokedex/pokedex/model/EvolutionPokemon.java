@@ -1,6 +1,9 @@
 package com.pokedex.pokedex.model;
 
 import lombok.Data;
+import lombok.Getter;
+
+import java.util.List;
 
 //Classe que representa os dados da evolução do pokemon
 @Data
@@ -10,6 +13,8 @@ public class EvolutionPokemon {
     private String trigger; //gatilho para a evolução
     private String item; //item necessário para evolução
     private Integer level; //nível necessário para evolução
+    @Getter
+    private List<String> evolutions;
 
     @Override
     public String toString(){
