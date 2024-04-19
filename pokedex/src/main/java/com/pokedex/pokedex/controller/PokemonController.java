@@ -19,8 +19,6 @@ public class PokemonController {
     private PokeApiService pokeApiService;
     private PokemonService pokemonService;
 
-
-
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")
     public ResponseEntity<PokemonResquest> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {

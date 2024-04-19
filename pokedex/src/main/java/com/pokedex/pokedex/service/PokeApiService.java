@@ -26,16 +26,16 @@ public class PokeApiService {
     private final ObjectMapper objectMapper;
     private final Gson gson;
 
-    public PokeApiService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper, Gson gson) {
+    public PokeApiService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
         this.restTemplate = restTemplateBuilder.build(); //constrói as instâncias
         this.objectMapper = objectMapper;
-        this.gson = gson;
+        this.gson = new Gson();
     }
 
     //Busca Pokemon pelo id
     public PokemonResquest getPokemonByNumber(Long number) throws PokemonNotFoundException {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + id, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + number, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
             throw new PokemonNotFoundException("Pokemon not found with id: " + number);
         }

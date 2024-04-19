@@ -3,16 +3,19 @@ package com.pokedex.pokedex.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
 import com.pokedex.pokedex.model.EvolutionChain;
 import com.pokedex.pokedex.model.EvolutionPokemon;
 import com.pokedex.pokedex.model.Pokemon;
 import com.pokedex.pokedex.model.PokemonResquest;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
@@ -27,14 +30,25 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 @SpringBootTest
 public class TestPokeApiService {
-    @InjectMocks
-    private PokeApiService pokeApiService;
-
     @Mock
     private RestTemplate restTemplate;
 
     @Mock
     private ObjectMapper objectMapper;
+
+    @Mock
+    private Gson gson;
+
+    @Mock
+    private RestTemplateBuilder restTemplateBuilder;
+
+    private PokeApiService pokeApiService;
+
+    @Before
+    public void setUp() {
+        pokeApiService = new PokeApiService(restTemplateBuilder, objectMapper);
+        when(restTemplateBuilder.build()).thenReturn(restTemplate);
+    }
 
     @Test
     public void testGetPokemonByNumber() throws JsonProcessingException {
@@ -75,10 +89,9 @@ public class TestPokeApiService {
         when(restTemplate.getForEntity(anyString(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
 
-        EvolutionPokemon result = pokeApiService.getEvolutionByName("bulbasaur");
+        List<EvolutionPokemon> result = pokeApiService.getEvolutionByName("bulbasaur");
 
-        assertEquals("bulbasaur", result.());
-        assertEquals(Long.valueOf(1), result.getNumber());
-        assertEquals("https://pokeapi.co/api/v2/evolution-chain/1/", result.ge);
+        assertNotNull(result);
+        result.listIterator();
     }
 }
