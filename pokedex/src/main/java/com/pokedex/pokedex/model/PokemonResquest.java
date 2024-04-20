@@ -18,8 +18,8 @@ public class PokemonResquest {
     @NotBlank(message = "invalid image URL")
     private String imageUrl;
 
-    @NotBlank(message = "invalid description")
-    private String description;
+    @NotBlank(message = "invalid type")
+    private String type;
 
     @NotBlank(message = "invalid evolutions list")
     private List<String> evolutions;

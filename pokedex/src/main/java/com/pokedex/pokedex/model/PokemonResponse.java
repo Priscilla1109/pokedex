@@ -4,8 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 //Classe responsável por representar os dados retornados pelo servidor em resposta a uma solicitação
 @Data
 @NoArgsConstructor
@@ -13,7 +11,7 @@ import java.util.List;
 public class PokemonResponse {
     private Long number;
     private String name;
-    private String description;
+    private String type;
     private String imageUrl;
 //    private List<String> evolutions;
 

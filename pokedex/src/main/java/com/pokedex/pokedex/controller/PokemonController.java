@@ -5,6 +5,7 @@ import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -16,13 +17,17 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/APIs/pokedex")
 public class PokemonController {
+
+    @Autowired
     private PokeApiService pokeApiService;
+
+    @Autowired
     private PokemonService pokemonService;
 
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")
-    public ResponseEntity<PokemonResquest> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
-        PokemonResquest pokemon = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+    public ResponseEntity<PokemonResponse> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
+        PokemonResponse pokemon = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         return ResponseEntity.ok(pokemon);
     }
 
@@ -57,8 +62,8 @@ public class PokemonController {
 
     //Endpoint de Deleção de Pokemons:
     @DeleteMapping("{number}")
-    public ResponseEntity<String> deletarPokemon(@PathVariable Long number){
-        pokemonService.deletPokemon(number);
+    public ResponseEntity<String> deletePokemon(@PathVariable Long number){
+        pokemonService.deletePokemon(number);
         return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
     }
 
@@ -68,7 +73,7 @@ public class PokemonController {
         return ResponseEntity.ok(species);
     }
 
-    @GetMapping("/evolution-chain/{number}")
+    @GetMapping("/evolution-chain")
     public ResponseEntity<EvolutionChain> getEvolutionChainByUrl(@PathVariable String url){
         EvolutionChain chain = pokeApiService.getChain(url);
         return ResponseEntity.ok(chain);

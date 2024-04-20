@@ -35,7 +35,7 @@ public class PokemonService {
         return pokemonRepository.findAll(pageRequest);
     }
 
-    public boolean deletPokemon(Long number) {
+    public boolean deletePokemon(Long number) {
         Pokemon pokemon = searchPokemonNumber(number);
         pokemonRepository.delete(pokemon);
         return true;

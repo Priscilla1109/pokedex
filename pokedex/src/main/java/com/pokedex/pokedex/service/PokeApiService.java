@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
-import com.pokedex.pokedex.model.EvolutionChain;
-import com.pokedex.pokedex.model.EvolutionPokemon;
-import com.pokedex.pokedex.model.PokemonResquest;
-import com.pokedex.pokedex.model.PokemonSpecie;
+import com.pokedex.pokedex.model.*;
 import org.apache.commons.lang3.StringUtils;
 import com.google.gson.Gson;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -33,7 +30,7 @@ public class PokeApiService {
     }
 
     //Busca Pokemon pelo id
-    public PokemonResquest getPokemonByNumber(Long number) throws PokemonNotFoundException {
+    public PokemonResponse getPokemonByNumber(Long number) throws PokemonNotFoundException {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
         ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + number, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
@@ -41,14 +38,14 @@ public class PokeApiService {
         }
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()); //converte a resposya da API para um JSON
-            return objectMapper.treeToValue(jsonNode, PokemonResquest.class); //mapeia os dados do JSON para o objeto PokemonDTO
+            return objectMapper.treeToValue(jsonNode, PokemonResponse.class); //mapeia os dados do JSON para o objeto PokemonDTO
         } catch (JsonProcessingException e){
             throw new RuntimeException("Error processing Prokemon API response", e);
         }
     }
 
     //Busca Pokemon pelo nome ou numero
-    public PokemonResquest getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {
+    public PokemonResponse getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {
         if (StringUtils.isNumeric(nameOrNumber)){
             Long id = Long.parseLong(nameOrNumber);
             return getPokemonByNumber(id);
@@ -59,7 +56,7 @@ public class PokeApiService {
             }
             try {
                 JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()); //converte a resposya da API para um JSON
-                return objectMapper.treeToValue(jsonNode, PokemonResquest.class); //mapeia os dados do JSON para o objeto PokemonDTO
+                return objectMapper.treeToValue(jsonNode, PokemonResponse.class); //mapeia os dados do JSON para o objeto PokemonDTO
             } catch (JsonProcessingException e){
                 throw new RuntimeException("Error processing Prokemon API response", e);
             }

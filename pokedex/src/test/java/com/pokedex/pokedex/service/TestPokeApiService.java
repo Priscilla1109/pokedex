@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.pokedex.pokedex.model.EvolutionChain;
-import com.pokedex.pokedex.model.EvolutionPokemon;
-import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonResquest;
+import com.pokedex.pokedex.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,9 +58,7 @@ public class TestPokeApiService {
         when(objectMapper.readTree(mockResponse)).thenReturn(new ObjectMapper().readTree(mockResponse));
         when(objectMapper.treeToValue(any(JsonNode.class), eq(Pokemon.class))).thenReturn(new Pokemon());
 
-        PokemonResquest pokemonResquest = new PokemonResquest();
-
-        PokemonResquest pokemonSuch = pokeApiService.getPokemonByNumber(1L);
+        PokemonResponse pokemonSuch = pokeApiService.getPokemonByNumber(1L);
 
         assertNotNull(pokemonSuch);
         assertEquals("bulbasaur", pokemonSuch.getName());
@@ -76,7 +71,7 @@ public class TestPokeApiService {
         when(restTemplate.getForEntity(anyString(), eq(String.class)))
                 .thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
 
-        PokemonResquest result = pokeApiService.getPokemonNameOrNumber("bulbasaur");
+        PokemonResponse result = pokeApiService.getPokemonNameOrNumber("bulbasaur");
 
         assertEquals("bulbasaur", result.getName());
         assertEquals(Long.valueOf(1), result.getNumber());

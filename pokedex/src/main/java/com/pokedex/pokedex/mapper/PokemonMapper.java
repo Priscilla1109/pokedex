@@ -21,7 +21,7 @@ public class PokemonMapper {
         PokemonResponse response = new PokemonResponse();
         response.setNumber(pokemon.getNumber());
         response.setName(pokemon.getName());
-        response.setDescription(pokemon.getDescription());
+        response.setType(pokemon.getDescription());
         response.setImageUrl(pokemon.getImageUrl());
 //        response.setEvolutions(pokemon.getEvolutionsList());
 
