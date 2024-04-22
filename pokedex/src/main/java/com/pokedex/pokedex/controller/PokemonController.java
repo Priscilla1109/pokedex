@@ -75,7 +75,7 @@ public class PokemonController {
 
     @GetMapping("/evolution-chain")
     public ResponseEntity<EvolutionChain> getEvolutionChainByUrl(@PathVariable String url){
-        EvolutionChain chain = pokeApiService.getChain(url);
+        EvolutionChain chain = pokeApiService.getEvolutionChainByUrl(url);
         return ResponseEntity.ok(chain);
     }
 }

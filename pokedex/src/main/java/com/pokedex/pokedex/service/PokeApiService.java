@@ -64,23 +64,39 @@ public class PokeApiService {
     }
 
     //Lista de evoluções
-    public List<EvolutionPokemon> getEvolutionByName(String name){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon-species/" + name.toLowerCase(), String.class);
-        if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
-            throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);
-        }
-        try {
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            JsonNode evolutionChainUrlNode = jsonNode.get("evolution_chain").get("url");
-            String evolutionChainUrl = evolutionChainUrlNode.asText();
+    public List<EvolutionPokemon> getEvolutionsByPokemonName(String name) {
+        // Buscar a espécie do Pokémon pelo nome
+        PokemonSpecie specie = getSpecieByName(name);
 
-            ResponseEntity<String> evolutionResponseEntity = restTemplate.getForEntity(evolutionChainUrl, String.class);
-            JsonNode evolutionJsonNode = objectMapper.readTree(evolutionResponseEntity.getBody());
+        // Buscar a cadeia de evolução pela URL da espécie
+        EvolutionChain evolutionChain = getEvolutionChainByUrl(specie.getEvolutionChainUrl());
 
-            return parseEvolutionPokemon(evolutionJsonNode);
-        } catch (Exception e){
-            throw new RuntimeException("Error processing Pokemon API response: ", e);
+        // Converter a cadeia de evolução em uma lista de evoluções
+        return parseEvolutionChainToList(evolutionChain.getChain());
+    }
+
+    private List<EvolutionPokemon> parseEvolutionChainToList(EvolutionChain.ChainLink chainLink) {
+        List<EvolutionPokemon> evolutions = new ArrayList<>();
+
+        EvolutionPokemon evolutionPokemon = new EvolutionPokemon();
+        evolutionPokemon.setSpeciesName(chainLink.getSpecies().getName());
+
+        if (chainLink.getEvolutionDetails() != null && !chainLink.getEvolutionDetails().isEmpty()) {
+            EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); // Assumindo que você está interessado no primeiro detalhe de evolução
+            evolutionPokemon.setEvolutionMethod(evolutionDetail.getTriggerName());
+            evolutionPokemon.setTrigger(evolutionDetail.getTriggerName());
+            evolutionPokemon.setItem(evolutionDetail.getItemName());
+            evolutionPokemon.setLevel(evolutionDetail.getMinLevel());
         }
+
+        evolutions.add(evolutionPokemon);
+
+        if (chainLink.getEvolvesTo() != null && !chainLink.getEvolvesTo().isEmpty()) {
+            for (EvolutionChain.ChainLink evolvesTo : chainLink.getEvolvesTo()) {
+                evolutions.addAll(parseEvolutionChainToList(evolvesTo));
+            }
+        }
+        return evolutions;
     }
 
 
@@ -122,7 +138,7 @@ public class PokeApiService {
         }
     }
 
-    public EvolutionChain getChain(String url){
+    public EvolutionChain getEvolutionChainByUrl(String url){
         ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){

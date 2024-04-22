@@ -153,13 +153,16 @@ public class TestPokemonController {
     @Test
     public void testGetEvolutionChainByUrl() throws Exception{
         String url = "htrps://pokeapi.co/api/v2/evolution-chain/1";
+        String mockResponseBody = Constant.EVOLUTION_BULBASAUR;
 
         EvolutionChain expectedEvolutionChain = new EvolutionChain();
 
-        when(pokeApiService.getChain(url)).thenReturn(expectedEvolutionChain);
+        when(pokeApiService.getEvolutionChainByUrl(url)).thenReturn(expectedEvolutionChain);
 
-        mockMvc.perform(get("/APIs/pokedex/evolution-chain?url={url}"))
+        mockMvc.perform(get("/APIs/pokedex/evolution-chain")
+                .param(url, "url")
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath(""))
+                .andExpect(content().json(mockResponseBody));
     }
 }

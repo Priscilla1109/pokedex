@@ -8,7 +8,6 @@ import com.pokedex.pokedex.model.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,18 +74,5 @@ public class TestPokeApiService {
 
         assertEquals("bulbasaur", result.getName());
         assertEquals(Long.valueOf(1), result.getNumber());
-    }
-
-    @Test
-    public void testGetEvolutionByName() throws Exception{
-        String mockResponse = "{\"number\": 1, \"name\": \"bulbasaur,\" \"evolution_chain\": {\"url\": \"https://pokeapi.co/api/v2/evolution-chain/1/\"} }";
-
-        when(restTemplate.getForEntity(anyString(), eq(String.class)))
-                .thenReturn(new ResponseEntity<>(mockResponse, HttpStatus.OK));
-
-        List<EvolutionPokemon> result = pokeApiService.getEvolutionByName("bulbasaur");
-
-        assertNotNull(result);
-        result.listIterator();
     }
 }

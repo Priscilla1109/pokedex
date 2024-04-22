@@ -10,6 +10,5 @@ import lombok.NoArgsConstructor;
 //Classe que contém as informações da espécie do pokemon
 public class PokemonSpecie {
     private String name;
-    private String url;
-    private EvolutionChain evolutionChain;
+    private String evolutionChainUrl;
 }
