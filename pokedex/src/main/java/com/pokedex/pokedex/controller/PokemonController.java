@@ -5,6 +5,7 @@ import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,13 +17,12 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/APIs/pokedex")
+@RequiredArgsConstructor
 public class PokemonController {
 
-    @Autowired
-    private PokeApiService pokeApiService;
+    private final PokeApiService pokeApiService;
 
-    @Autowired
-    private PokemonService pokemonService;
+    private final PokemonService pokemonService;
 
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")

@@ -5,12 +5,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.model.*;
+import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import com.google.gson.Gson;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -18,29 +22,23 @@ import java.util.List;
 
 //Classe usada para interagir com a PokeAPI para recuperar as informações sobre o Pokemon
 @Service
+@RequiredArgsConstructor
 public class PokeApiService {
-    private final RestTemplate restTemplate; //classe para fazer requisições HTTP
-    private final ObjectMapper objectMapper;
-    private final Gson gson;
 
-    public PokeApiService(RestTemplateBuilder restTemplateBuilder, ObjectMapper objectMapper) {
-        this.restTemplate = restTemplateBuilder.build(); //constrói as instâncias
-        this.objectMapper = objectMapper;
-        this.gson = new Gson();
-    }
+    private final RestTemplate restTemplate; //classe para fazer requisições HTTP
+
+    private final ObjectMapper objectMapper;
+
 
     //Busca Pokemon pelo id
     public PokemonResponse getPokemonByNumber(Long number) throws PokemonNotFoundException {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + number, String.class);
-        if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
-            throw new PokemonNotFoundException("Pokemon not found with id: " + number);
-        }
+
         try {
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()); //converte a resposya da API para um JSON
-            return objectMapper.treeToValue(jsonNode, PokemonResponse.class); //mapeia os dados do JSON para o objeto PokemonDTO
-        } catch (JsonProcessingException e){
-            throw new RuntimeException("Error processing Prokemon API response", e);
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/" + number, PokemonResponse.class);
+            return responseEntity.getBody();
+        } catch (HttpClientErrorException.NotFound e) {
+            throw new PokemonNotFoundException("Pokemon not found with id: " + number);
         }
     }
 
@@ -50,13 +48,12 @@ public class PokeApiService {
             Long id = Long.parseLong(nameOrNumber);
             return getPokemonByNumber(id);
         } else {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/ditto" + nameOrNumber.toLowerCase(), String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/" + nameOrNumber.toLowerCase(), String.class);
             if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
                 throw new PokemonNotFoundException("Pokemon not found with name: " + nameOrNumber);
             }
             try {
-                JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody()); //converte a resposya da API para um JSON
-                return objectMapper.treeToValue(jsonNode, PokemonResponse.class); //mapeia os dados do JSON para o objeto PokemonDTO
+                return objectMapper.readValue(responseEntity.getBody(), PokemonResponse.class);
             } catch (JsonProcessingException e){
                 throw new RuntimeException("Error processing Prokemon API response", e);
             }
@@ -65,13 +62,13 @@ public class PokeApiService {
 
     //Lista de evoluções
     public List<EvolutionPokemon> getEvolutionsByPokemonName(String name) {
-        // Buscar a espécie do Pokémon pelo nome
+        //Buscar a espécie do Pokémon pelo nome
         PokemonSpecie specie = getSpecieByName(name);
 
-        // Buscar a cadeia de evolução pela URL da espécie
+        //Buscar a cadeia de evolução pela URL da espécie
         EvolutionChain evolutionChain = getEvolutionChainByUrl(specie.getEvolutionChainUrl());
 
-        // Converter a cadeia de evolução em uma lista de evoluções
+        //Converter a cadeia de evolução em uma lista de evoluções
         return parseEvolutionChainToList(evolutionChain.getChain());
     }
 
@@ -82,7 +79,7 @@ public class PokeApiService {
         evolutionPokemon.setSpeciesName(chainLink.getSpecies().getName());
 
         if (chainLink.getEvolutionDetails() != null && !chainLink.getEvolutionDetails().isEmpty()) {
-            EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); // Assumindo que você está interessado no primeiro detalhe de evolução
+            EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); //primeiro detalhe de evolução
             evolutionPokemon.setEvolutionMethod(evolutionDetail.getTriggerName());
             evolutionPokemon.setTrigger(evolutionDetail.getTriggerName());
             evolutionPokemon.setItem(evolutionDetail.getItemName());

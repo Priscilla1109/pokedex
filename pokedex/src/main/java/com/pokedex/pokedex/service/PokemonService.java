@@ -27,7 +27,7 @@ public class PokemonService {
         Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
         Pokemon savedPokemon = pokemonRepository.save(pokemon);
 
-        return new PokemonResponse(savedPokemon.getNumber(), savedPokemon.getName(), savedPokemon.getDescription(), savedPokemon.getImageUrl());
+        return new PokemonResponse(savedPokemon.getNumber(), savedPokemon.getName(), savedPokemon.getType(), savedPokemon.getImageUrl());
     }
 
     public Page<Pokemon> listPokemons(int page, int pageSize) {

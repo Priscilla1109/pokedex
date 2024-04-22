@@ -19,8 +19,8 @@ public class Pokemon {
     @Column(name = "imageUrl")
     private String imageUrl;
 
-    @Column(name = "description")
-    private String description;
+    @Column(name = "type")
+    private String type;
 
 //    @Column(name = "evolutions")
 //    private List<String> evolutionsList;

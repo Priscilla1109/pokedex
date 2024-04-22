@@ -10,7 +10,7 @@ public class PokemonMapper {
         Pokemon pokemon = new Pokemon();
         pokemon.setNumber(pokemonResquest.getNumber());
         pokemon.setName(pokemonResquest.getName());
-        pokemon.setDescription(pokemonResquest.getType());
+        pokemon.setType(pokemonResquest.getType());
         pokemon.setImageUrl(pokemonResquest.getImageUrl());
 //        pokemon.setEvolutionsList(pokemonResquest.getEvolutions());
 
@@ -21,7 +21,7 @@ public class PokemonMapper {
         PokemonResponse response = new PokemonResponse();
         response.setNumber(pokemon.getNumber());
         response.setName(pokemon.getName());
-        response.setType(pokemon.getDescription());
+        response.setType(pokemon.getType());
         response.setImageUrl(pokemon.getImageUrl());
 //        response.setEvolutions(pokemon.getEvolutionsList());
 

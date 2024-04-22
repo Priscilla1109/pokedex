@@ -48,7 +48,7 @@ public class TestPokemonController {
         pokemon.setName(Constant.NAME_BULBASAUR);
         pokemon.setNumber(Constant.NUMBER_BULBASAUR);
         pokemon.setImageUrl(Constant.URL_BULBASAUR);
-        pokemon.setDescription(Constant.TYPE_BULBASAUR);
+        pokemon.setType(Constant.TYPE_BULBASAUR);
 
         PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
 
@@ -87,14 +87,14 @@ public class TestPokemonController {
         Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
         pokemon.setName(Constant.NAME_BULBASAUR);
         pokemon.setNumber(Constant.NUMBER_BULBASAUR);
-        pokemon.setDescription(Constant.TYPE_BULBASAUR);
+        pokemon.setType(Constant.TYPE_BULBASAUR);
         pokemon.setImageUrl(Constant.URL_BULBASAUR);
 
         PokemonResquest pokemonResquest2 = new PokemonResquest();
         Pokemon pokemon2 = PokemonMapper.toDomain(pokemonResquest2);
         pokemon2.setName("pikachu");
         pokemon2.setNumber(20L);
-        pokemon2.setDescription("description");
+        pokemon2.setType("description");
         pokemon2.setImageUrl("url");
 
         List<Pokemon> pokemons = Arrays.asList(pokemon, pokemon2);
@@ -110,12 +110,12 @@ public class TestPokemonController {
                 //body pokemon
                 .andExpect(jsonPath("$.pokemons[0].number").value(pokemon.getNumber()))
                 .andExpect(jsonPath("$.pokemons[0].name").value(pokemon.getName()))
-                .andExpect(jsonPath("$.pokemons[0].description").value(pokemon.getDescription()))
+                .andExpect(jsonPath("$.pokemons[0].description").value(pokemon.getType()))
                 .andExpect(jsonPath("$.pokemons[0].imageUrl").value(pokemon.getImageUrl()))
                 //body pokemon2
                 .andExpect(jsonPath("$.pokemons[1].number").value(pokemon2.getNumber()))
                 .andExpect(jsonPath("$.pokemons[1].name").value(pokemon2.getName()))
-                .andExpect(jsonPath("$.pokemons[1].description").value(pokemon2.getDescription()))
+                .andExpect(jsonPath("$.pokemons[1].description").value(pokemon2.getType()))
                 .andExpect(jsonPath("$.pokemons[1].imageUrl").value(pokemon2.getImageUrl()));
     }
 
@@ -152,16 +152,13 @@ public class TestPokemonController {
 
     @Test
     public void testGetEvolutionChainByUrl() throws Exception{
-        String url = "htrps://pokeapi.co/api/v2/evolution-chain/1";
         String mockResponseBody = Constant.EVOLUTION_BULBASAUR;
 
         EvolutionChain expectedEvolutionChain = new EvolutionChain();
 
-        when(pokeApiService.getEvolutionChainByUrl(url)).thenReturn(expectedEvolutionChain);
+        when(pokeApiService.getEvolutionChainByUrl(anyString())).thenReturn(expectedEvolutionChain);
 
-        mockMvc.perform(get("/APIs/pokedex/evolution-chain")
-                .param(url, "url")
-                .contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/evolution-chain/{url}","https://pokeapi.co/api/v2/evolution-chain/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mockResponseBody));
     }
