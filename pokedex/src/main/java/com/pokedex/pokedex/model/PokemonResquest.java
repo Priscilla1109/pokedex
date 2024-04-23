@@ -22,5 +22,5 @@ public class PokemonResquest {
     private String type;
 
     @NotBlank(message = "invalid evolutions list")
-    private List<String> evolutions;
+    private List<EvolutionChain.ChainLink.EvolutionDetail> evolutions;
 }

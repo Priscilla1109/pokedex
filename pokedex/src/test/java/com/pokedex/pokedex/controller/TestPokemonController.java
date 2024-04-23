@@ -140,7 +140,7 @@ public class TestPokemonController {
 
     @Test
     public void tesGetSpeciesByName() throws Exception {
-        PokemonSpecie pokemonSpecie = new PokemonSpecie();
+        EvolutionChain.ChainLink.Species pokemonSpecie = new EvolutionChain.ChainLink.Species();
         pokemonSpecie.setName(Constant.NAME_BULBASAUR);
 
         when(pokeApiService.getSpecieByName(anyString())).thenReturn(pokemonSpecie);

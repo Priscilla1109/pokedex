@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 //Classe que contém o atributos da cadeia de evolução do Pokemon
 public class EvolutionChain {
-    private int id;
+    private Long id;
     private ChainLink chain;
 
     @Data

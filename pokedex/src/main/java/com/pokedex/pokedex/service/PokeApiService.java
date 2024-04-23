@@ -3,6 +3,7 @@ package com.pokedex.pokedex.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.model.*;
 import lombok.RequiredArgsConstructor;
@@ -61,29 +62,28 @@ public class PokeApiService {
     }
 
     //Lista de evoluções
-    public List<EvolutionPokemon> getEvolutionsByPokemonName(String name) {
+    public List<EvolutionChain> getEvolutionsByPokemonName(String name) {
         //Buscar a espécie do Pokémon pelo nome
-        PokemonSpecie specie = getSpecieByName(name);
+        EvolutionChain.ChainLink.Species specie = getSpecieByName(name);
 
         //Buscar a cadeia de evolução pela URL da espécie
-        EvolutionChain evolutionChain = getEvolutionChainByUrl(specie.getEvolutionChainUrl());
+        EvolutionChain evolutionChain = getEvolutionChainByUrl(specie.getUrl());
 
         //Converter a cadeia de evolução em uma lista de evoluções
         return parseEvolutionChainToList(evolutionChain.getChain());
     }
 
-    private List<EvolutionPokemon> parseEvolutionChainToList(EvolutionChain.ChainLink chainLink) {
-        List<EvolutionPokemon> evolutions = new ArrayList<>();
+    private List<EvolutionChain> parseEvolutionChainToList(EvolutionChain.ChainLink chainLink) {
+        List<EvolutionChain> evolutions = new ArrayList<>();
 
-        EvolutionPokemon evolutionPokemon = new EvolutionPokemon();
-        evolutionPokemon.setSpeciesName(chainLink.getSpecies().getName());
+        EvolutionChain evolutionPokemon = new EvolutionChain();
+        evolutionPokemon.getChain().getSpecies().setName(Constant.NAME_BULBASAUR);
 
         if (chainLink.getEvolutionDetails() != null && !chainLink.getEvolutionDetails().isEmpty()) {
             EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); //primeiro detalhe de evolução
-            evolutionPokemon.setEvolutionMethod(evolutionDetail.getTriggerName());
-            evolutionPokemon.setTrigger(evolutionDetail.getTriggerName());
-            evolutionPokemon.setItem(evolutionDetail.getItemName());
-            evolutionPokemon.setLevel(evolutionDetail.getMinLevel());
+            evolutionDetail.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
+            evolutionDetail.setItemName(Constant.ITEM_NAME_BULBASAUR);
+            evolutionDetail.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
         }
 
         evolutions.add(evolutionPokemon);
@@ -97,39 +97,14 @@ public class PokeApiService {
     }
 
 
-    //Método que converte o JSON da evolução do Pokemon em uma lista de Objetos EvolutionPokemon
-    public List<EvolutionPokemon> parseEvolutionPokemon(JsonNode evolutionJsonNode) {
-        List<EvolutionPokemon> evolutions = new ArrayList<>();
-        for (JsonNode chainNode : evolutionJsonNode.get("chain")){
-            EvolutionPokemon evolutionPokemon = new EvolutionPokemon();
-
-            evolutionPokemon.setSpeciesName(chainNode.get("species").get("name").asText());
-            JsonNode evolutionDetails = chainNode.get("evolution_details").get(0);
-
-            evolutionPokemon.setEvolutionMethod(evolutionDetails.get("trigger").get("name").asText());
-            evolutionPokemon.setTrigger(evolutionDetails.get("trigger").get("name").asText());
-
-            if (evolutionDetails.has("item")){
-                evolutionPokemon.setItem(evolutionDetails.get("item").get("name").asText());
-            }
-
-            if (evolutionDetails.has("min_level")){
-                evolutionPokemon.setLevel(evolutionDetails.get("min_level").asInt());
-            }
-
-            evolutions.add(evolutionPokemon);
-        }
-        return evolutions;
-    }
-
-    public PokemonSpecie getSpecieByName(String name) {
+    public EvolutionChain.ChainLink.Species getSpecieByName(String name) {
         ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon-species/" + name.toLowerCase(), String.class);
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
             throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);
         }
         try {
             JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            return objectMapper.treeToValue(jsonNode.get("name"), PokemonSpecie.class);
+            return objectMapper.treeToValue(jsonNode.get("name"), EvolutionChain.ChainLink.Species.class);
         } catch (JsonProcessingException e){
             throw new RuntimeException("Error processing Pokemon API response.", e);
         }
