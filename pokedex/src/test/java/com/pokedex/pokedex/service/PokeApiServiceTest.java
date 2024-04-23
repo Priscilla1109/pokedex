@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.mapper.PokemonMapper;
+import com.pokedex.pokedex.model.EvolutionChain;
 import com.pokedex.pokedex.model.Pokemon;
 import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.model.PokemonResquest;
@@ -30,7 +31,6 @@ public class PokeApiServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
-
     @InjectMocks
     private PokeApiService pokeApiService;
 
@@ -38,20 +38,15 @@ public class PokeApiServiceTest {
     @Test
     public void testGetPokemonByNumber() throws JsonProcessingException {
         //Mockar a resposta a API
-        String mockResponse = Constant.RESPONSE_BULBASAUR;
-        PokemonResquest pokemonResquest = new PokemonResquest();
-        pokemonResquest.setName(Constant.NAME_BULBASAUR);
-        pokemonResquest.setNumber(Constant.NUMBER_BULBASAUR);
+        PokemonResponse pokemonResponse = new PokemonResponse();
+        pokemonResponse.setName(Constant.NAME_BULBASAUR);
 
-        ResponseEntity<String> responseEntity = new ResponseEntity<>(mockResponse, HttpStatus.OK);
+        ResponseEntity<PokemonResponse> responseEntity = new ResponseEntity<>(pokemonResponse, HttpStatus.OK);
 
         //Configurando o Mock
-        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(responseEntity);
-        when(objectMapper.readTree(mockResponse)).thenReturn(new ObjectMapper().readTree(mockResponse));
-        when(objectMapper.treeToValue(any(JsonNode.class), eq(Pokemon.class))).thenReturn(new Pokemon());
-        when(objectMapper.readValue(mockResponse, PokemonResponse.class)).thenReturn(new PokemonResponse());
+        when(restTemplate.getForEntity(anyString(), eq(PokemonResponse.class))).thenReturn(responseEntity);
 
-        PokemonResponse pokemonSuch = pokeApiService.getPokemonByNumber(pokemonResquest.getNumber());
+        PokemonResponse pokemonSuch = pokeApiService.getPokemonByNumber(pokemonResponse.getNumber());
 
         assertNotNull(pokemonSuch);
         assertEquals(Constant.NAME_BULBASAUR, pokemonSuch.getName());
@@ -59,22 +54,64 @@ public class PokeApiServiceTest {
 
     @Test
     public void testGetPokemonNameOrNumber() throws Exception{
-        String mockResponse = Constant.RESPONSE_BULBASAUR;
-        ResponseEntity<String> mockResponseEntity =  new ResponseEntity<>(mockResponse, HttpStatus.OK);
+        //Mockar a resposta a API
+        PokemonResponse pokemonResponse = new PokemonResponse();
+        pokemonResponse.setName(Constant.NAME_BULBASAUR);
 
-        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(mockResponseEntity);
+        ResponseEntity<String> responseEntity = new ResponseEntity<>("{}", HttpStatus.OK);
 
-        PokemonResquest mockPokemonResquest = new PokemonResquest();
+        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(responseEntity);
+        when(objectMapper.readValue(anyString(), eq(PokemonResponse.class))).thenReturn(pokemonResponse);
 
-        mockPokemonResquest.setName(Constant.NAME_BULBASAUR);
-        mockPokemonResquest.setNumber(Constant.NUMBER_BULBASAUR);
-        mockPokemonResquest.setType(Constant.TYPE_BULBASAUR);
+        PokemonResponse actualPokemonReponse = pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR);
 
-        when(objectMapper.readValue(anyString(), eq(PokemonResquest.class))).thenReturn(mockPokemonResquest);
+        assertEquals(pokemonResponse.getName(), actualPokemonReponse.getName());
+    }
 
-        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber("bulbasaur");
+    @Test
+    public void testGetEvolutionsByName(){
+        EvolutionChain.ChainLink.Species species = new EvolutionChain.ChainLink.Species();
+        species.setName(Constant.NAME_BULBASAUR);
+        species.setUrl(Constant.URL_SPECIES_BULBASAUR);
 
-        assertEquals("bulbasaur", mockPokemonResquest.getName());
-        assertEquals(1L, mockPokemonResquest.getNumber());
+        EvolutionChain evolutionChain = new EvolutionChain();
+        evolutionChain.setId(Constant.NUMBER_BULBASAUR);
+        evolutionChain.setChain(new EvolutionChain.ChainLink());
+
+        when(pokeApiService.getSpecieByName(anyString())).thenReturn(species);
+        when(pokeApiService.getEvolutionChainByUrl(anyString())).thenReturn(evolutionChain);
+
+        assertEquals(1, pokeApiService.getEvolutionsByPokemonName(Constant.NAME_BULBASAUR).size());
+    }
+
+    @Test
+    public void testGetSpecieByName() throws JsonProcessingException {
+        EvolutionChain.ChainLink.Species expectedSpecie = new EvolutionChain.ChainLink.Species();
+        expectedSpecie.setName(Constant.NAME_BULBASAUR);
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>("{}", HttpStatus.OK);
+
+        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(responseEntity);
+        when(objectMapper.readValue(anyString(), eq(EvolutionChain.ChainLink.Species.class))).thenReturn(expectedSpecie);
+
+        EvolutionChain.ChainLink.Species actualSpecie = pokeApiService.getSpecieByName(Constant.NAME_BULBASAUR);
+
+        assertEquals(expectedSpecie.getName(), actualSpecie.getName());
+    }
+
+    @Test
+    public void testGetEvolutionChainByUrl() throws JsonProcessingException {
+        EvolutionChain expectedChain = new EvolutionChain();
+        expectedChain.setId(Constant.NUMBER_BULBASAUR);
+        expectedChain.setChain(new EvolutionChain.ChainLink());
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>("{}", HttpStatus.OK);
+
+        when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(responseEntity);
+        when(objectMapper.readValue(anyString(), eq(EvolutionChain.class))).thenReturn(expectedChain);
+
+        EvolutionChain actualChain = pokeApiService.getEvolutionChainByUrl("http://localhost:8083/APIs/pokedex/evolution-chain/1");
+
+        assertEquals(expectedChain.getId(), actualChain.getId());
     }
 }

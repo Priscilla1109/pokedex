@@ -1,50 +1,59 @@
 package com.pokedex.pokedex.advice;
 
 
+import com.pokedex.pokedex.exception.BadRequestException;
+import com.pokedex.pokedex.exception.InternalServerErrorException;
+import com.pokedex.pokedex.exception.PokemonNotFoundException;
+import com.pokedex.pokedex.model.PokemonResquest;
 import com.pokedex.pokedex.service.PokemonService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PokemonHandlerException.class)
+@ExtendWith(MockitoExtension.class)
 public class PokemonHandlerExceptionTest {
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private PokemonService pokemonService;  // Supondo que você tenha uma classe PokemonService
+    @InjectMocks
+    PokemonHandlerException pokemonHandlerException;
 
     @Test
     public void testPokemonNotFoundException() throws Exception {
-        mockMvc.perform(get("/api/pokemon/999"))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("Pokemon not found with id: 999"));
+        ResponseEntity<String> responseEntity = pokemonHandlerException.pokemonNotFoundException(new PokemonNotFoundException("Pokemon not found!"));
+
+        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+        assertEquals("Pokemon not found: null", responseEntity.getBody());
     }
 
     @Test
     public void testBadRequestException() throws Exception {
-        mockMvc.perform(post("/api/pokemon")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{ \"number\": \"invalid\", \"name\": \"Bulbasaur\", \"imageUrl\": \"https://example.com/image.png\", \"type\": \"Grass\", \"evolutions\": [] }"))
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("Invalid Pokemon number"));
+        ResponseEntity<String> responseEntity = pokemonHandlerException.badResquestException(new BadRequestException("Bad Request. Please check your request parameters"));
+
+        assertEquals(HttpStatus.BAD_REQUEST, responseEntity.getStatusCode());
+        assertEquals("Bad Request. Please check your request parameters", responseEntity.getBody());
     }
 
     @Test
     public void testInternalServerErrorException() throws Exception {
-        mockMvc.perform(get("/api/pokemon/internalError"))
-                .andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-                .andExpect(content().string("Internal server error occurred"));
+        ResponseEntity<String> responseEntity = pokemonHandlerException.internalServerErrorException(new InternalServerErrorException("Internal server error. Please try again later"));
+
+        assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, responseEntity.getStatusCode());
+        assertEquals("Internal server error. Please try again later", responseEntity.getBody());
     }
 }

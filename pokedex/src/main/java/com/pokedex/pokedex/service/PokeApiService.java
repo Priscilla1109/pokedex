@@ -36,7 +36,7 @@ public class PokeApiService {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
 
         try {
-            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/" + number, PokemonResponse.class);
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/pokemon/" + number, PokemonResponse.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e) {
             throw new PokemonNotFoundException("Pokemon not found with id: " + number);
@@ -49,7 +49,7 @@ public class PokeApiService {
             Long id = Long.parseLong(nameOrNumber);
             return getPokemonByNumber(id);
         } else {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon/" + nameOrNumber.toLowerCase(), String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/pokemon/" + nameOrNumber.toLowerCase(), String.class);
             if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
                 throw new PokemonNotFoundException("Pokemon not found with name: " + nameOrNumber);
             }
@@ -98,26 +98,22 @@ public class PokeApiService {
 
 
     public EvolutionChain.ChainLink.Species getSpecieByName(String name) {
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://pokeapi.co/api/v2/pokemon-species/" + name.toLowerCase(), String.class);
-        if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
-            throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);
-        }
         try {
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
-            return objectMapper.treeToValue(jsonNode.get("name"), EvolutionChain.ChainLink.Species.class);
-        } catch (JsonProcessingException e){
-            throw new RuntimeException("Error processing Pokemon API response.", e);
+            ResponseEntity<EvolutionChain.ChainLink.Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/species/" + name, EvolutionChain.ChainLink.Species.class);
+            return responseEntity.getBody();
+        } catch (HttpClientErrorException.NotFound e){
+            throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);
         }
     }
 
     public EvolutionChain getEvolutionChainByUrl(String url){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+        ResponseEntity<EvolutionChain> responseEntity = restTemplate.getForEntity(url, EvolutionChain.class);
 
         if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
             throw new PokemonNotFoundException("Evolution chain not found.");
         }
         try{
-            JsonNode jsonNode = objectMapper.readTree(responseEntity.getBody());
+            JsonNode jsonNode = objectMapper.readTree(String.valueOf(responseEntity.getBody()));
             return parseEvolutionChain(jsonNode);
         } catch (JsonProcessingException e){
             throw new RuntimeException("Error processing Pokemon API response.", e);

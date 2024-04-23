@@ -35,7 +35,7 @@ public class PokemonController {
     @PostMapping("/add")
     public ResponseEntity<String> addNewPokemon(@Valid @RequestBody PokemonResquest pokemonResquest){
         Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
-        pokemonService.addNewPokemon(pokemonResquest);
+        pokemonService.addNewPokemon(pokemon);
 
         return ResponseEntity.ok("Pokemon adicionado com sucesso!");
     }

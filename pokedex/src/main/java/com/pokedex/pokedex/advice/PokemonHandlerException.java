@@ -15,19 +15,19 @@ public class PokemonHandlerException {
     //Erro 404
     @ExceptionHandler(PokemonNotFoundException.class)
     public ResponseEntity<String> pokemonNotFoundException(PokemonNotFoundException e){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        return new ResponseEntity<>("Pokemon not found: " + e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     //Erro 400
     @ExceptionHandler(BadRequestException.class)
-        public ResponseEntity<String> badResquestException(BadRequestException e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    public ResponseEntity<String> badResquestException(BadRequestException e){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bad Request. Please check your request parameters");
     }
 
 
     //Erro 500
     @ExceptionHandler(InternalServerErrorException.class)
     public ResponseEntity<String> internalServerErrorException(InternalServerErrorException e){
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Internal server error. Please try again later");
     }
 }
