@@ -1,12 +1,16 @@
 package com.pokedex.pokedex.config;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Constant {
     //Pokemon Bulbasaur
     public static final String NAME_BULBASAUR = "bulbasaur";
     public static final Long NUMBER_BULBASAUR = 1L;
     public static final String URL_BULBASAUR = "https://pokeapi.co/api/v2/pokemon-f";
     public static final String URL_SPECIES_BULBASAUR = "https://pokeapi.co/api/v2/pokemon-species/1";
-    public static final String TYPE_BULBASAUR = "grass, poison";
+    public static final List<String> TYPE_BULBASAUR = Arrays.asList("Grass, Poison");
     public static final String RESPONSE_BULBASAUR = "{\"name\": \"bulbasaur\", \"number\": 1, \"type\": \"grass, poison\"}";
     public static final String EVOLUTION_BULBASAUR = "{\\\"id\\\": 1, \\\"chain\\\": { \\\"species\\\": { \\\"name\\\": \\\"bulbasaur\\\" }, \\\"evolution_details\\\": [], \\\"evolves_to\\\": [ { \\\"species\\\": { \\\"name\\\": \\\"ivysaur\\\" }, \\\"evolution_details\\\": [], \\\"evolves_to\\\": [ { \\\"species\\\": { \\\"name\\\": \\\"venusaur\\\" }, \\\"evolution_details\\\": [], \\\"evolves_to\\\": [] } ] } ] } }";
     public static final String ITEM_NAME_BULBASAUR = "Leaf Stone";

@@ -6,7 +6,6 @@ import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @RestController
 @RequestMapping("/APIs/pokedex")
@@ -77,5 +77,11 @@ public class PokemonController {
     public ResponseEntity<EvolutionChain> getEvolutionChainByUrl(@PathVariable String url){
         EvolutionChain chain = pokeApiService.getEvolutionChainByUrl(url);
         return ResponseEntity.ok(chain);
+    }
+
+    @GetMapping("{/evolutions/{pokemonNumber}")
+    public ResponseEntity<List<EvolutionDetail>> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
+        List<EvolutionDetail> evolutionDetails = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
+        return ResponseEntity.ok(evolutionDetails);
     }
 }

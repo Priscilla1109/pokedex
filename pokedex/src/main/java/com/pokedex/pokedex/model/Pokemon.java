@@ -1,15 +1,18 @@
 package com.pokedex.pokedex.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Data
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Pokemon {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "number")
     private Long number;
 
@@ -19,9 +22,9 @@ public class Pokemon {
     @Column(name = "imageUrl")
     private String imageUrl;
 
-    @Column(name = "type")
-    private String type;
+    @ElementCollection
+    private List<String> type;
 
-//    @Column(name = "evolutions")
-//    private List<String> evolutionsList;
+    @ElementCollection
+    private List<String> evolutions;
 }

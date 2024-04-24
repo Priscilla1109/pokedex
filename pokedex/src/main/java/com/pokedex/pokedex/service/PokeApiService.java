@@ -27,15 +27,15 @@ public class PokeApiService {
     private final ObjectMapper objectMapper;
 
 
-    //Busca Pokemon pelo id
+    //Busca Pokemon pelo number
     public PokemonResponse getPokemonByNumber(Long number) throws PokemonNotFoundException {
-        //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
+        //Chamada GET para a PokeAPI para obter os dados do pokemon através do number, o corpo da resposta é uma string
 
         try {
-            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/" + number, PokemonResponse.class);
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/api-pokedex/pokemon/" + number, PokemonResponse.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e) {
-            throw new PokemonNotFoundException("Pokemon not found with id: " + number);
+            throw new PokemonNotFoundException("Pokemon not found with number: " + number);
         }
     }
 
@@ -45,7 +45,7 @@ public class PokeApiService {
             Long id = Long.parseLong(nameOrNumber);
             return getPokemonByNumber(id);
         } else {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/" + nameOrNumber.toLowerCase(), String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/api-pokedex/pokemon/" + nameOrNumber.toLowerCase(), String.class);
             if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
                 throw new PokemonNotFoundException("Pokemon not found with name: " + nameOrNumber);
             }
@@ -92,10 +92,9 @@ public class PokeApiService {
         return evolutions;
     }
 
-
     public Species getSpecieByName(String name) {
         try {
-            ResponseEntity<Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/species/" + name, Species.class);
+            ResponseEntity<Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/api-pokedex/species/" + name, Species.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e){
             throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);

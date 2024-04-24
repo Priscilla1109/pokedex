@@ -1,15 +1,15 @@
 package com.pokedex.pokedex.service;
 
-import com.pokedex.pokedex.mapper.PokemonMapper;
+import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonResponse;
-import com.pokedex.pokedex.model.PokemonResquest;
+import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public class PokemonService {
     private PokemonRepository pokemonRepository;
 
     @Autowired
-    private PokeApiService pokeApiService;
+    private EvolutionRepository evolutionRepository;
 
 
     public Pokemon addNewPokemon(Pokemon pokemon) {
@@ -42,5 +42,9 @@ public class PokemonService {
     private Pokemon searchPokemonNumber(Long number) {
         Optional<Pokemon> pokemon = pokemonRepository.findById(number);
         return pokemon.orElseThrow(NoSuchElementException::new);
+    }
+
+    public List<EvolutionDetail> getEvolutionsByPokemonNumber(Long pokemonNumber){
+        return evolutionRepository.findByPokemonNumber(pokemonNumber);
     }
 }

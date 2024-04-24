@@ -3,13 +3,14 @@ package com.pokedex.pokedex.model;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 
 //Classe que contém os campos necessários do payload dos pokemons
 @Data
 public class PokemonResquest {
-    @NotBlank(message = "invalid number")
+    @NotNull(message = "invalid number")
     private Long number;
 
     @NotBlank(message = "invalid name")
@@ -18,9 +19,9 @@ public class PokemonResquest {
     @NotBlank(message = "invalid image URL")
     private String imageUrl;
 
-    @NotBlank(message = "invalid type")
-    private String type;
+    @NotNull(message = "invalid type")
+    private List<String> type;
 
-    @NotBlank(message = "invalid evolutions list")
-    private List<EvolutionDetail> evolutions;
+    @NotNull(message = "invalid evolutions list")
+    private List<PokemonResquest> evolutions;
 }

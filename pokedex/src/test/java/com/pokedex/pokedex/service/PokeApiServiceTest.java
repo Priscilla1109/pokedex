@@ -91,7 +91,7 @@ public class PokeApiServiceTest {
         ResponseEntity<String> responseEntity = new ResponseEntity<>("{}", HttpStatus.OK);
 
         when(restTemplate.getForEntity(
-                eq("http://localhost:8083/APIs/pokedex/pokemon-specie/bulbasaur"),
+                eq("http://localhost:8083/APIs/api-pokedex/pokemon-specie/bulbasaur"),
                 eq(String.class)))
                 .thenReturn(responseEntity);
 
@@ -116,7 +116,7 @@ public class PokeApiServiceTest {
         when(restTemplate.getForEntity(anyString(), eq(String.class))).thenReturn(responseEntity);
         when(objectMapper.readValue(anyString(), eq(EvolutionChain.class))).thenReturn(expectedChain);
 
-        EvolutionChain actualChain = pokeApiService.getEvolutionChainByUrl("http://localhost:8083/APIs/pokedex/evolution-chain/1");
+        EvolutionChain actualChain = pokeApiService.getEvolutionChainByUrl("http://localhost:8083/APIs/api-pokedex/evolution-chain/1");
 
         assertEquals(expectedChain.getId(), actualChain.getId());
     }

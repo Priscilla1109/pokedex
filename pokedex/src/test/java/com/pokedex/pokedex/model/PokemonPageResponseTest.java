@@ -4,6 +4,7 @@ import com.pokedex.pokedex.config.Constant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class PokemonPageResponseTest {
 
         Pokemon pokemon2 = new Pokemon();
         pokemon2.setName("Charmander");
-        pokemon2.setType("fire");
+        pokemon2.setType(Arrays.asList("Fire"));
 
         pokemons = Arrays.asList(pokemon1, pokemon2);
 

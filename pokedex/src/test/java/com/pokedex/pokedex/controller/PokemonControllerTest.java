@@ -18,6 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class PokemonControllerTest {
         Pokemon pokemon2 = PokemonMapper.toDomain(pokemonResquest2);
         pokemon2.setName("pikachu");
         pokemon2.setNumber(20L);
-        pokemon2.setType("description");
+        pokemon2.setType(Constant.TYPE_BULBASAUR);
         pokemon2.setImageUrl("url");
 
         List<Pokemon> pokemons = Arrays.asList(pokemon, pokemon2);
