@@ -8,14 +8,10 @@ import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.model.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
-import com.google.gson.Gson;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
@@ -36,7 +32,7 @@ public class PokeApiService {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do id, o corpo da resposta é uma string
 
         try {
-            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/pokemon/" + number, PokemonResponse.class);
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/" + number, PokemonResponse.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e) {
             throw new PokemonNotFoundException("Pokemon not found with id: " + number);
@@ -49,7 +45,7 @@ public class PokeApiService {
             Long id = Long.parseLong(nameOrNumber);
             return getPokemonByNumber(id);
         } else {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/pokemon/" + nameOrNumber.toLowerCase(), String.class);
+            ResponseEntity<String> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/" + nameOrNumber.toLowerCase(), String.class);
             if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND){
                 throw new PokemonNotFoundException("Pokemon not found with name: " + nameOrNumber);
             }
@@ -64,7 +60,7 @@ public class PokeApiService {
     //Lista de evoluções
     public List<EvolutionChain> getEvolutionsByPokemonName(String name) {
         //Buscar a espécie do Pokémon pelo nome
-        EvolutionChain.ChainLink.Species specie = getSpecieByName(name);
+        Species specie = getSpecieByName(name);
 
         //Buscar a cadeia de evolução pela URL da espécie
         EvolutionChain evolutionChain = getEvolutionChainByUrl(specie.getUrl());
@@ -73,14 +69,14 @@ public class PokeApiService {
         return parseEvolutionChainToList(evolutionChain.getChain());
     }
 
-    private List<EvolutionChain> parseEvolutionChainToList(EvolutionChain.ChainLink chainLink) {
+    private List<EvolutionChain> parseEvolutionChainToList(ChainLink chainLink) {
         List<EvolutionChain> evolutions = new ArrayList<>();
 
         EvolutionChain evolutionPokemon = new EvolutionChain();
         evolutionPokemon.getChain().getSpecies().setName(Constant.NAME_BULBASAUR);
 
         if (chainLink.getEvolutionDetails() != null && !chainLink.getEvolutionDetails().isEmpty()) {
-            EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); //primeiro detalhe de evolução
+            EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); //primeiro detalhe de evolução
             evolutionDetail.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
             evolutionDetail.setItemName(Constant.ITEM_NAME_BULBASAUR);
             evolutionDetail.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
@@ -89,7 +85,7 @@ public class PokeApiService {
         evolutions.add(evolutionPokemon);
 
         if (chainLink.getEvolvesTo() != null && !chainLink.getEvolvesTo().isEmpty()) {
-            for (EvolutionChain.ChainLink evolvesTo : chainLink.getEvolvesTo()) {
+            for (ChainLink evolvesTo : chainLink.getEvolvesTo()) {
                 evolutions.addAll(parseEvolutionChainToList(evolvesTo));
             }
         }
@@ -97,9 +93,9 @@ public class PokeApiService {
     }
 
 
-    public EvolutionChain.ChainLink.Species getSpecieByName(String name) {
+    public Species getSpecieByName(String name) {
         try {
-            ResponseEntity<EvolutionChain.ChainLink.Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/pokedex/species/" + name, EvolutionChain.ChainLink.Species.class);
+            ResponseEntity<Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/species/" + name, Species.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e){
             throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);

@@ -17,8 +17,8 @@ public class PokemonRequestTest {
         pokemonResquest.setType(Constant.TYPE_BULBASAUR);
         pokemonResquest.setImageUrl(Constant.IMAGE_URL_BULBASAUR);
 
-        List<EvolutionChain.ChainLink.EvolutionDetail> listEvolutionDetails = new ArrayList<>();
-        EvolutionChain.ChainLink.EvolutionDetail evolutionDetails = new EvolutionChain.ChainLink.EvolutionDetail();
+        List<EvolutionDetail> listEvolutionDetails = new ArrayList<>();
+        EvolutionDetail evolutionDetails = new EvolutionDetail();
 
         listEvolutionDetails.add(evolutionDetails);
         evolutionDetails.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);

@@ -68,8 +68,8 @@ public class PokemonController {
     }
 
     @GetMapping("/species/{name}")
-    public ResponseEntity<EvolutionChain.ChainLink.Species> getSpeciesByName(@PathVariable String name){
-        EvolutionChain.ChainLink.Species species = pokeApiService.getSpecieByName(name);
+    public ResponseEntity<Species> getSpeciesByName(@PathVariable String name){
+        Species species = pokeApiService.getSpecieByName(name);
         return ResponseEntity.ok(species);
     }
 

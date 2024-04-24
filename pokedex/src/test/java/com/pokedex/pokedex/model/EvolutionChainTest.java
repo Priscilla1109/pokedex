@@ -14,12 +14,12 @@ public class EvolutionChainTest {
     public void testEvolutionChain(){
         EvolutionChain evolutionChain = new EvolutionChain();
 
-        EvolutionChain.ChainLink chainLink = new EvolutionChain.ChainLink();
-        chainLink.setSpecies(new EvolutionChain.ChainLink.Species());
+       ChainLink chainLink = new ChainLink();
+        chainLink.setSpecies(new Species());
         chainLink.getSpecies().setName(Constant.NAME_BULBASAUR);
         chainLink.getSpecies().setUrl(Constant.URL_SPECIES_BULBASAUR);
 
-        EvolutionChain.ChainLink.EvolutionDetail evolutionDetail = new EvolutionChain.ChainLink.EvolutionDetail();
+        EvolutionDetail evolutionDetail = new EvolutionDetail();
         evolutionDetail.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
         evolutionDetail.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
         evolutionDetail.setItemName(Constant.ITEM_NAME_BULBASAUR);
