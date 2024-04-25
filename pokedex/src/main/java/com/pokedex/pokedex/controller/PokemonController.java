@@ -79,7 +79,7 @@ public class PokemonController {
         return ResponseEntity.ok(chain);
     }
 
-    @GetMapping("{/evolutions/{pokemonNumber}")
+    @GetMapping("/evolutions/{pokemonNumber}")
     public ResponseEntity<List<EvolutionDetail>> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
         List<EvolutionDetail> evolutionDetails = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
         return ResponseEntity.ok(evolutionDetails);
