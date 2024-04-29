@@ -34,12 +34,12 @@ public class PokemonService {
     }
 
     public boolean deletePokemon(Long number) {
-        Pokemon pokemon = searchPokemonNumber(number);
+        Pokemon pokemon = getPokemonByNumber(number);
         pokemonRepository.delete(pokemon);
         return true;
     }
 
-    private Pokemon searchPokemonNumber(Long number) {
+    public Pokemon getPokemonByNumber(Long number) {
         Optional<Pokemon> pokemon = pokemonRepository.findById(number);
         return pokemon.orElseThrow(NoSuchElementException::new);
     }

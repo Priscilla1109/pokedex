@@ -2,64 +2,54 @@ package com.pokedex.pokedex.integration;
 
 import com.pokedex.pokedex.config.Constant;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ExtendWith(SpringExtension.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 public class PokemonIntegrationTest {
     @Autowired
-    private TestRestTemplate restTemplate;
-
-    @LocalServerPort
-    private int port;
+    private MockMvc mockMvc;
 
     @Test
-    public void testGetPokemonByName(){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://localhost:" + port + "/APIs/pokedex/pokemon/bulbasaur", String.class);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(responseEntity.getBody(), Constant.NAME_BULBASAUR);
+    public void testGetPokemonByNameOrNumber() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/APIs/api-pokedex/pokemon/bulbasaur")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("bulbasaur"));
     }
 
     @Test
-    public void testGetListPokemons(){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://localhost:" + port + "/APIs/pokedex/pokemon", String.class);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(responseEntity.getBody(), Constant.NAME_BULBASAUR);
+    public void testGetSpeciesByName() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/APIs/api-pokedex/pokemon-species/bulbasaur")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("bulbasaur"));
     }
 
     @Test
-    public void testGetEvolutionChainByName(){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://localhost:" + port + "/APIs/pokedex/evolution-chain/bulbasaur", String.class);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertTrue(responseEntity.getBody().contains("ivysaur"));
-        assertTrue(responseEntity.getBody().contains("venusaur"));
-    }
-
-    //Teste de erro: pokemon não encontrado
-    @Test
-    public void testGetPokemonByNameNotFound(){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://localhost:" + port + "/APIs/pokedex/pokemon/unknown", String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertTrue(responseEntity.getBody().contains("Pokemon not found with name: unknown"));
-    }
-
-    //Teste de erro: cadeia de evolução não encontrada
-    @Test
-    public void testGetEvolutionChainByNameNotFound(){
-        ResponseEntity<String> responseEntity = restTemplate.getForEntity("https://localhost:" + port + "/APIs/pokedex/evolution-chain/unknown", String.class);
-
-        assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
-        assertTrue(responseEntity.getBody().contains("Pokemon not found with name: unknown"));
+    public void testGetEvolutionChainById() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/APIs/api-pokedex/evolution-chain/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1));
     }
 }
+

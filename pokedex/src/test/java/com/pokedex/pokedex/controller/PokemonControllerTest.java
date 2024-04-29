@@ -13,15 +13,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -64,22 +68,27 @@ public class PokemonControllerTest {
 
     @Test
     public void testAddNewPokemon() throws Exception {
-        PokemonResponse pokemonResponse = new PokemonResponse();
-        pokemonResponse.setNumber(Constant.NUMBER_BULBASAUR);
-        pokemonResponse.setName(Constant.NAME_BULBASAUR);
-        pokemonResponse.setType(Constant.TYPE_BULBASAUR);
-        pokemonResponse.setImageUrl(Constant.URL_BULBASAUR);
+        // Creating a PokemonRequest object for the request body
+        PokemonResquest pokemonRequest = new PokemonResquest();
+        pokemonRequest.setName(Constant.NAME_BULBASAUR);
+        pokemonRequest.setNumber(Constant.NUMBER_BULBASAUR);
 
-        when(pokemonService.addNewPokemon(any())).thenReturn(new Pokemon());
+        // Mocking the service method call
+        Pokemon pokemon = new Pokemon();
+        pokemon.setName(Constant.NAME_BULBASAUR);
+        pokemon.setNumber(Constant.NUMBER_BULBASAUR);
+        when(pokemonService.addNewPokemon(any(Pokemon.class))).thenReturn(pokemon);
 
-        mockMvc.perform(post("/APIs/pokedex/add")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(pokemonResponse)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number").value(pokemonResponse.getNumber()))
-                .andExpect(jsonPath("$.name").value(pokemonResponse.getName()))
-                .andExpect(jsonPath("$.description").value(pokemonResponse.getType()))
-                .andExpect(jsonPath("$.imageUrl").value(pokemonResponse.getImageUrl()));
+        // Performing the POST request
+        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/APIs/pokedex/add")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(pokemonRequest)))
+                .andReturn();
+
+        // Verifying the response
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertEquals(HttpStatus.OK.value(), response.getStatus());
+        assertEquals("Pokemon adicionado com sucesso!", response.getContentAsString());
     }
 
     @Test
@@ -111,12 +120,12 @@ public class PokemonControllerTest {
                 //body pokemon
                 .andExpect(jsonPath("$.pokemons[0].number").value(pokemon.getNumber()))
                 .andExpect(jsonPath("$.pokemons[0].name").value(pokemon.getName()))
-                .andExpect(jsonPath("$.pokemons[0].description").value(pokemon.getType()))
+                .andExpect(jsonPath("$.pokemons[0].type").value(pokemon.getType()))
                 .andExpect(jsonPath("$.pokemons[0].imageUrl").value(pokemon.getImageUrl()))
                 //body pokemon2
                 .andExpect(jsonPath("$.pokemons[1].number").value(pokemon2.getNumber()))
                 .andExpect(jsonPath("$.pokemons[1].name").value(pokemon2.getName()))
-                .andExpect(jsonPath("$.pokemons[1].description").value(pokemon2.getType()))
+                .andExpect(jsonPath("$.pokemons[1].type").value(pokemon2.getType()))
                 .andExpect(jsonPath("$.pokemons[1].imageUrl").value(pokemon2.getImageUrl()));
     }
 
