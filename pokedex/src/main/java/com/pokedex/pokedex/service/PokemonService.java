@@ -2,6 +2,7 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
+import com.pokedex.pokedex.model.PokemonResquest;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;

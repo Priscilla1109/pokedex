@@ -1,8 +1,12 @@
 package com.pokedex.pokedex.mapper;
 
+import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
 import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.model.PokemonResquest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class PokemonMapper {
 
@@ -12,7 +16,17 @@ public class PokemonMapper {
         pokemon.setName(pokemonResquest.getName());
         pokemon.setType(pokemonResquest.getType());
         pokemon.setImageUrl(pokemonResquest.getImageUrl());
-//        pokemon.setEvolutionsList(pokemonResquest.getEvolutions());
+
+        List<PokemonResquest> evolutions = new ArrayList<>();
+        if (pokemonResquest.getEvolutions() != null){
+            for (PokemonResquest evolutionRequest : pokemonResquest.getEvolutions()){
+                PokemonResquest evolution = new PokemonResquest();
+                evolution.setName(evolutionRequest.getName());
+                evolution.setType(evolutionRequest.getType());
+                evolutionRequest.setImageUrl(evolutionRequest.getImageUrl());
+            }
+        }
+        pokemon.setEvolutionsList(evolutions);
 
         return pokemon;
     }

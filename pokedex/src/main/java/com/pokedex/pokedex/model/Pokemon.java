@@ -31,4 +31,7 @@ public class Pokemon {
     //cascade = configuração que define operações de persistência (salvar, atualizar, deletar)
     //condição true garante a remoção de detalhes de evolução que não estão relacionados a nenhum pokemon
     private List<EvolutionDetail> evolutions;
+
+    public void setEvolutionsList(List<PokemonResquest> evolutions) {
+    }
 }

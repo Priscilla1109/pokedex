@@ -80,15 +80,11 @@ public class PokemonControllerTest {
         when(pokemonService.addNewPokemon(any(Pokemon.class))).thenReturn(pokemon);
 
         // Performing the POST request
-        MvcResult mvcResult = mockMvc.perform(MockMvcRequestBuilders.post("/APIs/pokedex/add")
+        mockMvc.perform(MockMvcRequestBuilders.post("/APIs/pokedex/add")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(pokemonRequest)))
-                .andReturn();
-
-        // Verifying the response
-        MockHttpServletResponse response = mvcResult.getResponse();
-        assertEquals(HttpStatus.OK.value(), response.getStatus());
-        assertEquals("Pokemon adicionado com sucesso!", response.getContentAsString());
+                .andExpect(status().isOk())
+                .andExpect(content().string("Pokemon adicionado com sucesso!"));
     }
 
     @Test

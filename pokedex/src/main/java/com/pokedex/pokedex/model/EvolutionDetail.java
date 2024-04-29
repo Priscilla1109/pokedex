@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class EvolutionDetail { //detalhes sobre a evolução
     @Id
     @Column(name = "number")
-    private int number;
+    private Long number;
 
     @Column(name = "minLevel")
     private int minLevel;

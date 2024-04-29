@@ -32,7 +32,7 @@ public class PokeApiService {
         //Chamada GET para a PokeAPI para obter os dados do pokemon através do number, o corpo da resposta é uma string
 
         try {
-            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/api-pokedex/pokemon/" + number, PokemonResponse.class);
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/" + number, PokemonResponse.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e) {
             throw new PokemonNotFoundException("Pokemon not found with number: " + number);
