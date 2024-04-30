@@ -22,7 +22,6 @@ public class EvolutionChainTest {
         EvolutionDetail evolutionDetail = new EvolutionDetail();
         evolutionDetail.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
         evolutionDetail.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
-        evolutionDetail.setItemName(Constant.ITEM_NAME_BULBASAUR);
 
         chainLink.setEvolutionDetails(List.of(evolutionDetail));
         chainLink.setEvolvesTo(new ArrayList<>());
@@ -37,7 +36,6 @@ public class EvolutionChainTest {
         assertEquals(1, evolutionChain.getChain().getEvolutionDetails().size());
         assertEquals(Constant.MIN_LEVEL_BULBASAUR, evolutionChain.getChain().getEvolutionDetails().get(0).getMinLevel());
         assertEquals(Constant.TRIGGER_NAME_BULBASAUR, evolutionChain.getChain().getEvolutionDetails().get(0).getTriggerName());
-        assertEquals(Constant.ITEM_NAME_BULBASAUR, evolutionChain.getChain().getEvolutionDetails().get(0).getItemName());
         assertTrue(evolutionChain.getChain().getEvolvesTo().isEmpty());
     }
 }

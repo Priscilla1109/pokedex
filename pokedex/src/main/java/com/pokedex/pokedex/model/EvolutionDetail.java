@@ -1,6 +1,5 @@
 package com.pokedex.pokedex.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,13 +20,8 @@ public class EvolutionDetail { //detalhes sobre a evolução
     @Column(name = "triggerName")
     private String triggerName;
 
-    @Column(name = "itemName")
-    private String itemName;
-
     @ManyToOne(fetch = FetchType.LAZY) //relacionamento com a tabela Pokemon
     @JoinColumn(name = "pokemon_number", referencedColumnName = "number")
     private Pokemon pokemon;
 
-    public EvolutionDetail(int pokemonNumber, String itemName, int minLevel, String triggerName) {
-    }
 }

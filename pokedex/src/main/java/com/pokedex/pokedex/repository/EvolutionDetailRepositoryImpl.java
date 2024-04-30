@@ -31,7 +31,6 @@ public class EvolutionDetailRepositoryImpl {
                 String sql = "INSERT INTO evolution_details (NUMBER, ITEM_NAME, MIN_LEVEL, TRIGGER_NAME) VALUES (?, ?, ?, ?)";
                 jdbcTemplate.update(sql,
                         evolution.getNumber(),
-                        evolution.getItemName(),
                         evolution.getMinLevel(),
                         evolution.getTriggerName());
             }

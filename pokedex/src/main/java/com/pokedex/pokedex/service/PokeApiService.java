@@ -78,7 +78,6 @@ public class PokeApiService {
         if (chainLink.getEvolutionDetails() != null && !chainLink.getEvolutionDetails().isEmpty()) {
             EvolutionDetail evolutionDetail = chainLink.getEvolutionDetails().get(0); //primeiro detalhe de evolução
             evolutionDetail.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
-            evolutionDetail.setItemName(Constant.ITEM_NAME_BULBASAUR);
             evolutionDetail.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
         }
 
@@ -94,7 +93,7 @@ public class PokeApiService {
 
     public Species getSpecieByName(String name) {
         try {
-            ResponseEntity<Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/APIs/api-pokedex/species/" + name, Species.class);
+            ResponseEntity<Species> responseEntity = restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/species/" + name, Species.class);
             return responseEntity.getBody();
         } catch (HttpClientErrorException.NotFound e){
             throw new PokemonNotFoundException("Pokemon species is not found with name: " + name);

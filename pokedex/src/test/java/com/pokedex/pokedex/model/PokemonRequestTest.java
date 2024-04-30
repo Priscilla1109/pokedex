@@ -6,8 +6,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public class PokemonRequestTest {
     @Test
     public void testPokemonRequest(){
@@ -22,7 +20,6 @@ public class PokemonRequestTest {
 
         listEvolutionDetails.add(pokemonResquest);
         evolutionDetails.setMinLevel(Constant.MIN_LEVEL_BULBASAUR);
-        evolutionDetails.setItemName(Constant.ITEM_NAME_BULBASAUR);
         evolutionDetails.setTriggerName(Constant.TRIGGER_NAME_BULBASAUR);
         pokemonResquest.setEvolutions(listEvolutionDetails);
 

@@ -27,6 +27,9 @@ public class Pokemon {
     private List<String> type;
 
     @ElementCollection
+    private List<Pokemon> pokemonEvolutions;
+
+    @ElementCollection
     @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, orphanRemoval = true)
     //cascade = configuração que define operações de persistência (salvar, atualizar, deletar)
     //condição true garante a remoção de detalhes de evolução que não estão relacionados a nenhum pokemon
