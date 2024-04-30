@@ -67,18 +67,6 @@ public class PokemonController {
         return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
     }
 
-    @GetMapping("/species/{name}")
-    public ResponseEntity<Species> getSpeciesByName(@PathVariable String name){
-        Species species = pokeApiService.getSpecieByName(name);
-        return ResponseEntity.ok(species);
-    }
-
-    @GetMapping("/evolution-chain")
-    public ResponseEntity<EvolutionChain> getEvolutionChainByUrl(@PathVariable String url){
-        EvolutionChain chain = pokeApiService.getEvolutionChainByUrl(url);
-        return ResponseEntity.ok(chain);
-    }
-
     @GetMapping("/evolutions/{pokemonNumber}")
     public ResponseEntity<List<EvolutionDetail>> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
         List<EvolutionDetail> evolutionDetails = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);

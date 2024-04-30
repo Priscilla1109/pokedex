@@ -13,19 +13,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -142,32 +137,5 @@ public class PokemonControllerTest {
                 .andExpect(status().isOk());
 
         verify(pokemonService, times(1)).deletePokemon(pokemon.getNumber());
-    }
-
-    @Test
-    public void tesGetSpeciesByName() throws Exception {
-        Species pokemonSpecie = new Species();
-        pokemonSpecie.setName(Constant.NAME_BULBASAUR);
-
-        when(pokeApiService.getSpecieByName(anyString())).thenReturn(pokemonSpecie);
-
-        mockMvc.perform(get("/APIs/pokedex/species/bulbasaur"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(pokemonSpecie.getName()));
-    }
-
-    @Test
-    public void testGetEvolutionChainByUrl() throws Exception{
-        String mockResponseBody = Constant.EVOLUTION_BULBASAUR;
-
-        EvolutionChain evolutionChain = new EvolutionChain();
-        evolutionChain.setId(1L);
-
-        when(pokeApiService.getEvolutionChainByUrl(anyString())).thenReturn(evolutionChain);
-
-        mockMvc.perform(get("/APIs/pokedex/evolution-chain"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(mockResponseBody))
-                .andExpect(jsonPath("$.id").value(evolutionChain.getId()));
     }
 }
