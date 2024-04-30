@@ -1,9 +1,11 @@
 package com.pokedex.pokedex.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -22,6 +24,11 @@ public class PokemonResquest {
     @NotNull(message = "invalid type")
     private List<String> type;
 
+    @JsonProperty("evolutions")
     @NotNull(message = "invalid evolutions list")
     private List<PokemonResquest> evolutions;
+
+    @JsonProperty("evolutionDetails")
+    @NotNull(message = "invalid evolutionDetails list")
+    private List<EvolutionDetail> evolutionDetails = new ArrayList<>();
 }

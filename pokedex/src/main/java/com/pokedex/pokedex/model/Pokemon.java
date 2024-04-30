@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -26,15 +27,15 @@ public class Pokemon {
     @ElementCollection
     private List<String> type;
 
-    @ElementCollection
-    private List<Pokemon> pokemonEvolutions;
-
-    @ElementCollection
-    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, orphanRemoval = true)
-    //cascade = configuração que define operações de persistência (salvar, atualizar, deletar)
-    //condição true garante a remoção de detalhes de evolução que não estão relacionados a nenhum pokemon
-    private List<EvolutionDetail> evolutions;
-
-    public void setEvolutionsList(List<PokemonResquest> evolutions) {
-    }
+//    @ElementCollection
+//    private List<Pokemon> evolutions = new ArrayList<>();
+//
+//    @ElementCollection
+//    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL, orphanRemoval = true)
+//    //cascade = configuração que define operações de persistência (salvar, atualizar, deletar)
+//    //condição true garante a remoção de detalhes de evolução que não estão relacionados a nenhum pokemon
+//    private List<EvolutionDetail> evolutionDetails;
+//
+//    public void setEvolutionsList(List<PokemonResquest> evolutions) {
+//    }
 }

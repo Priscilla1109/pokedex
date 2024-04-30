@@ -26,8 +26,7 @@ public class PokemonService {
 
 
     public Pokemon addNewPokemon(Pokemon pokemon) {
-        pokemonRepository.save(pokemon);
-        return pokemon;
+        return pokemonRepository.save(pokemon);
     }
 
     public Page<Pokemon> listPokemons(int page, int pageSize) {
@@ -47,7 +46,7 @@ public class PokemonService {
                 .map(this::mapEvolutionWithDetails)
                 .collect(Collectors.toList());
 
-        pokemon.setEvolutions(evolutionsWithDetails);
+        pokemon.setEvolutionDetails(evolutionsWithDetails);
 
         return pokemon;
     }
