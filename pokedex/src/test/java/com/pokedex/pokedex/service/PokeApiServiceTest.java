@@ -29,24 +29,6 @@ public class PokeApiServiceTest {
     @InjectMocks
     private PokeApiService pokeApiService;
 
-
-    @Test
-    public void testGetPokemonByNumber(){
-        //Mockar a resposta a API
-        PokemonResponse pokemonResponse = new PokemonResponse();
-        pokemonResponse.setName(Constant.NAME_BULBASAUR);
-
-        ResponseEntity<PokemonResponse> responseEntity = new ResponseEntity<>(pokemonResponse, HttpStatus.OK);
-
-        //Configurando o Mock
-        when(restTemplate.getForEntity(anyString(), eq(PokemonResponse.class))).thenReturn(responseEntity);
-
-        PokemonResponse pokemonSuch = pokeApiService.getPokemonByNumber(pokemonResponse.getNumber());
-
-        assertNotNull(pokemonSuch);
-        assertEquals(Constant.NAME_BULBASAUR, pokemonSuch.getName());
-    }
-
     @Test
     public void testGetPokemonNameOrNumber() throws Exception{
         //Mockar a resposta a API

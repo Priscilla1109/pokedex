@@ -33,11 +33,28 @@ public class PokemonController {
 
     //Endpoint de Adição de Pokemons:
     @PostMapping("/add")
-    public ResponseEntity<String> addNewPokemon(@Valid @RequestBody PokemonResquest pokemonResquest){
-        Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
-        pokemonService.addNewPokemon(pokemon);
+    public ResponseEntity<String> addNewPokemon(@RequestBody PokemonResquest pokemonRequest) {
+        String pokemonName = pokemonRequest.getName();
 
-        return ResponseEntity.ok("Pokemon adicionado com sucesso!");
+        // Verificar se o Pokémon já existe na API Pokedex
+        PokemonResponse existingPokemon = pokeApiService.getPokemonNameOrNumber(pokemonName);
+
+        if (existingPokemon != null) {
+            // Se o Pokémon já existe, use os dados do Pokémon existente para adicionar um novo Pokémon
+            Pokemon newPokemon = new Pokemon();
+            newPokemon.setName(existingPokemon.getName());
+            newPokemon.setNumber(existingPokemon.getNumber());
+            newPokemon.setType(existingPokemon.getType());
+            newPokemon.setImageUrl(existingPokemon.getImageUrl());
+
+            // Mapear o Pokémon com as informações de evolução
+            newPokemon = pokemonService.mapPokemonWithEvolutions(newPokemon);
+
+            pokemonService.addNewPokemon(newPokemon);
+            return ResponseEntity.ok("Pokemon adicionado com sucesso!" + newPokemon);
+        } else {
+            return ResponseEntity.badRequest().body("O Pokémon não foi encontrado na API Pokedex.");
+        }
     }
 
     //Endpoint de Listagem de Pokemons:
@@ -45,11 +62,17 @@ public class PokemonController {
     public ResponseEntity<PokemonPageResponse> listPokemons(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int pageSize){
-        PageRequest pageRequest = PageRequest.of(page, pageSize);
+        // Recupera a lista de Pokémon usando o PokemonService
+        List<Pokemon> pokemons = (List<Pokemon>) pokemonService.listPokemons(page, pageSize);
+
+        // Mapear cada Pokémon com as informações de evolução
+        for (Pokemon pokemon : pokemons) {
+            pokemonService.mapPokemonWithEvolutions(pokemon);
+        }
         Page<Pokemon> pokemonPage = pokemonService.listPokemons(page, pageSize);
 
         PokemonPageResponse response = new PokemonPageResponse();
-        response.setPokemons(pokemonPage.getContent());
+        response.setPokemons(pokemons);
         response.setMeta(new Meta(
                 pokemonPage.getNumber(),
                 pokemonPage.getSize(),

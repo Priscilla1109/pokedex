@@ -2,6 +2,7 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
+import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -33,21 +35,17 @@ public class PokemonService {
         PageRequest pageRequest = PageRequest.of(page, pageSize);
         Page<Pokemon> pokemonPage = pokemonRepository.findAll(pageRequest);
 
-        List<Pokemon> pokemonWithEvolutionsList = pokemonPage.getContent().stream()
+        List<Pokemon> pokemonListWithEvolutions = pokemonPage.getContent().stream()
                 .map(this::mapPokemonWithEvolutions)
                 .collect(Collectors.toList());
 
-        return new PageImpl<>(pokemonWithEvolutionsList, pageRequest, pokemonPage.getTotalElements());
+        return new PageImpl<>(pokemonListWithEvolutions, pageRequest, pokemonPage.getTotalElements());
     }
 
-    private Pokemon mapPokemonWithEvolutions(Pokemon pokemon) {
+    public Pokemon mapPokemonWithEvolutions(Pokemon pokemon) {
         List<EvolutionDetail> evolutions = evolutionRepository.findByPokemonNumber(pokemon.getNumber());
-        List<EvolutionDetail> evolutionsWithDetails = evolutions.stream()
-                .map(this::mapEvolutionWithDetails)
-                .collect(Collectors.toList());
-
+        List<EvolutionDetail> evolutionsWithDetails = mapEvolutionWithDetails(evolutions);
         pokemon.setEvolutionDetails(evolutionsWithDetails);
-
         return pokemon;
     }
 
@@ -55,6 +53,17 @@ public class PokemonService {
         EvolutionDetail evolutionDetail = new EvolutionDetail();
         evolutionDetail.setTriggerName(evolution.getTriggerName());
         evolutionDetail.setMinLevel(evolution.getMinLevel());
+
+        // Mapear os detalhes da evolução com informações do pokemon
+        Pokemon selfPokemon = getPokemonByNumber(evolution.getSelf().getNumber());
+        evolutionDetail.setSelf(selfPokemon);
+
+        List<Pokemon> evolvedPokemonList = new ArrayList<>();
+        for (Pokemon evolvedPokemon : evolution.getEvolution()) {
+            Pokemon evolvedPokemonInfo = getPokemonByNumber(evolvedPokemon.getNumber());
+            evolvedPokemonList.add(evolvedPokemonInfo);
+        }
+        evolutionDetail.setEvolution(evolvedPokemonList);
 
         return evolutionDetail;
     }
