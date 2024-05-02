@@ -2,7 +2,6 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,10 @@ public class PokemonService {
     }
 
     public Pokemon mapPokemonWithEvolutions(Pokemon pokemon) {
-        List<EvolutionDetail> evolutions = evolutionRepository.findByPokemonNumber(pokemon.getNumber());
-        List<EvolutionDetail> evolutionsWithDetails = mapEvolutionWithDetails(evolutions);
+        List<EvolutionDetail> evolutions = evolutionRepository.findByPokemon_Number(pokemon.getNumber());
+        List<EvolutionDetail> evolutionsWithDetails = evolutions.stream()
+                        .map(this::mapEvolutionWithDetails)
+                        .collect(Collectors.toList());
         pokemon.setEvolutionDetails(evolutionsWithDetails);
         return pokemon;
     }
@@ -80,6 +81,6 @@ public class PokemonService {
     }
 
     public List<EvolutionDetail> getEvolutionsByPokemonNumber(Long pokemonNumber){
-        return evolutionRepository.findByPokemonNumber(pokemonNumber);
+        return evolutionRepository.findByPokemon_Number(pokemonNumber);
     }
 }

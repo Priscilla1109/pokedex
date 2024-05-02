@@ -6,6 +6,7 @@ import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.model.*;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,14 @@ import java.io.IOException;
 
 //Classe usada para interagir com a api-pokedex para recuperar as informações sobre o Pokemon
 @Service
-@RequiredArgsConstructor
 public class PokeApiService {
 
     private final RestTemplate restTemplate; //classe para fazer requisições HTTP
+
+    @Autowired
+    public PokeApiService(RestTemplate restTemplate){
+        this.restTemplate = restTemplate;
+    }
 
     //Busca Pokemon pelo nome ou numero
     public PokemonResponse getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {

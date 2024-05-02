@@ -1,30 +1,18 @@
 package com.pokedex.pokedex.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonPageResponse;
-import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
-import org.h2.mvstore.Page;
-import org.hibernate.validator.constraints.br.CPF;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -105,11 +93,11 @@ public class PokemonServiceTest {
     public void testGetEvolutionsByPokemonNumber() {
         Long pokemonNumber = 1L;
         List<EvolutionDetail> mockEvolutions = Collections.emptyList();
-        when(evolutionRepository.findByPokemonNumber(pokemonNumber)).thenReturn(mockEvolutions);
+        when(evolutionRepository.findByPokemon_Number(pokemonNumber)).thenReturn(mockEvolutions);
 
         List<EvolutionDetail> result = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
 
         assertEquals(mockEvolutions, result);
-        verify(evolutionRepository, times(1)).findByPokemonNumber(pokemonNumber);
+        verify(evolutionRepository, times(1)).findByPokemon_Number(pokemonNumber);
     }
 }

@@ -22,7 +22,6 @@ public class EvolutionDetail { //detalhes sobre a evolução
 
     private String triggerName;
 
-    @ManyToOne(fetch = FetchType.LAZY) //relacionamento com a tabela Pokemon
     @ElementCollection
     private List<Pokemon> evolution;
 
