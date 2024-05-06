@@ -18,8 +18,8 @@ public class EvolutionPokemon {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "pokemon_id", referencedColumnName = "number")
-    private Pokemon pokemon;
+    @JoinColumn(name = "pokemon_id")
+    private Pokemon self;
 
     @Column(name = "evolved_number")
     private Long number;

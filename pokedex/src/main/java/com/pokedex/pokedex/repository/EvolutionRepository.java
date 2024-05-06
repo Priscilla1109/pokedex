@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface EvolutionRepository extends JpaRepository<EvolutionDetail, Long> {
-    List<EvolutionDetail> findByPokemon_Number(Long pokemonNumber);
+    List<EvolutionDetail> findBySelf_Number(Long pokemonNumber);
 }

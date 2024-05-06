@@ -1,6 +1,7 @@
 package com.pokedex.pokedex.mapper;
 
 import com.pokedex.pokedex.model.*;
+import org.springframework.data.domain.Page;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +16,10 @@ public class PokemonMapper {
         pokemon.setImageUrl(pokemonResquest.getImageUrl());
 
         List<EvolutionPokemon> evolutions = new ArrayList<>();
-        if (pokemonResquest.getEvolutions() != null){
-            for (EvolutionPokemon evolutionPokemon : pokemonResquest.getEvolutions()){
+        if (pokemonResquest.getEvolutions() != null) {
+            for (EvolutionPokemon evolutionPokemon : pokemonResquest.getEvolutions()) {
                 EvolutionPokemon evolution = new EvolutionPokemon();
-                evolution.setPokemon(pokemon);
+                evolution.setSelf(pokemon);
                 evolution.setNumber(evolutionPokemon.getNumber());
                 evolutions.add(evolution);
             }
@@ -34,7 +35,10 @@ public class PokemonMapper {
         response.setName(pokemon.getName());
         response.setType(pokemon.getType());
         response.setImageUrl(pokemon.getImageUrl());
-//        response.setEvolutions(pokemon.getEvolutionsList());
+
+        // Mapear evoluções para a resposta
+        List<EvolutionPokemon> evolutions = pokemon.getEvolutions();
+        response.setEvolutions(evolutions);
 
         return response;
     }

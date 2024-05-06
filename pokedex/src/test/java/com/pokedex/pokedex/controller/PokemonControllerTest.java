@@ -101,7 +101,7 @@ public class PokemonControllerTest {
         List<Pokemon> pokemons = Arrays.asList(pokemon, pokemon2);
         Page<Pokemon> pokemonPageResponses = new PageImpl<>(pokemons);
 
-        when(pokemonService.listPokemons(0,10)).thenReturn(pokemonPageResponses);
+        when(pokemonService.listPokemons(0,10)).thenReturn((PokemonPageResponse) pokemonPageResponses);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/APIs/pokedex/pokemons")
                 .contentType(MediaType.APPLICATION_JSON))

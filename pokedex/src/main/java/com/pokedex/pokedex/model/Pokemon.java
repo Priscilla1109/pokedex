@@ -29,6 +29,6 @@ public class Pokemon {
     @OneToMany(mappedBy = "self", cascade = CascadeType.ALL)
     private List<EvolutionDetail> evolutionDetails;
 
-    @OneToMany(mappedBy = "pokemon", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "self", cascade = CascadeType.ALL)
     private List<EvolutionPokemon> evolutions;
 }

@@ -15,6 +15,5 @@ public class PokemonResponse {
     private String name;
     private List<String> type;
     private String imageUrl;
-//    private List<String> evolutions;
-
+    private List<EvolutionPokemon> evolutions;
 }
