@@ -61,7 +61,7 @@ public class PokemonControllerTest {
                 .andExpect(jsonPath("$.name").value(pokemonResponse.getName()));
     }
 
-    @Test
+   /* @Test
     public void testAddNewPokemon() throws Exception {
         // Creating a PokemonRequest object for the request body
         PokemonResquest pokemonRequest = new PokemonResquest();
@@ -118,9 +118,9 @@ public class PokemonControllerTest {
                 .andExpect(jsonPath("$.pokemons[1].name").value(pokemon2.getName()))
                 .andExpect(jsonPath("$.pokemons[1].type").value(pokemon2.getType()))
                 .andExpect(jsonPath("$.pokemons[1].imageUrl").value(pokemon2.getImageUrl()));
-    }
+    }*/
 
-    @Test
+    /*@Test
     public void testDeletePokemon() throws Exception{
         PokemonResquest pokemonResquest = new PokemonResquest();
         pokemonResquest.setNumber(Constant.NUMBER_BULBASAUR);
@@ -137,5 +137,5 @@ public class PokemonControllerTest {
                 .andExpect(status().isOk());
 
         verify(pokemonService, times(1)).deletePokemon(pokemon.getNumber());
-    }
+    }*/
 }

@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.pokedex.pokedex.service.PokemonService.mapPokemonWithEvolutions;
-
 @RestController
 @RequestMapping("/APIs/pokedex")
 @RequiredArgsConstructor
@@ -34,9 +32,9 @@ public class PokemonController {
     }
 
     //Endpoint de Adição de Pokemons:
-    @PostMapping("/add")
-    public ResponseEntity<PokemonResponse> addNewPokemon(@RequestBody PokemonResquest pokemonRequest) {
-        PokemonResponse response = pokemonService.addNewPokemon(pokemonRequest);
+    @PostMapping("/add/{nameOrNumber}")
+    public ResponseEntity<EvolutionDetail> addNewPokemon(@PathVariable String nameOrNumber) throws PokemonNotFoundException{
+        EvolutionDetail response = pokemonService.addNewPokemon(nameOrNumber);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -46,25 +44,9 @@ public class PokemonController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int pageSize){
         // Recupera a lista de PokémonPageResponse
-        Page<PokemonResponse> pokemonPage = (Page<PokemonResponse>) pokemonService.listPokemons(page, pageSize);
+        PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
 
-        // Mapear cada Pokémon com as informações de evolução
-        List<PokemonResponse> pokemons = pokemonPage.getContent();
-        for (PokemonResponse pokemon : pokemons) {
-            // Mapear as informações de evolução
-            mapPokemonWithEvolutions(pokemon);
-        }
-
-        PokemonPageResponse response = new PokemonPageResponse();
-        response.setPokemons(pokemons);
-        response.setMeta(new Meta(
-                pokemonPage.getNumber(),
-                pokemonPage.getSize(),
-                pokemonPage.getTotalPages(),
-                pokemonPage.getTotalElements()
-        ));
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(pokemonPage);
     }
 
     //Endpoint de Deleção de Pokemons:

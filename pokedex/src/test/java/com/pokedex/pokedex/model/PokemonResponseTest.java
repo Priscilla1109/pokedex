@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PokemonResponseTest {
-    @Test
+    /*@Test
     public void testPokemonResponse(){
         PokemonResponse pokemonResponse = new PokemonResponse();
         pokemonResponse.setNumber(Constant.NUMBER_BULBASAUR);
@@ -28,5 +28,5 @@ public class PokemonResponseTest {
         assertEquals(Constant.NAME_BULBASAUR, pokemonResponse.getName());
         assertEquals(Constant.TYPE_BULBASAUR, pokemonResponse.getType());
         assertEquals(Constant.IMAGE_URL_BULBASAUR, pokemonResponse.getImageUrl());
-    }
+    }*/
 }

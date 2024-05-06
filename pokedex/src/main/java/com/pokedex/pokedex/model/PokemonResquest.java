@@ -11,7 +11,7 @@ import java.util.List;
 
 //Classe que contém os campos necessários do payload dos pokemons
 @Data
-public class PokemonResquest extends EvolutionPokemon {
+public class PokemonResquest {
     @NotNull(message = "invalid number")
     private Long number;
 
@@ -27,8 +27,4 @@ public class PokemonResquest extends EvolutionPokemon {
     @JsonProperty("evolutions")
     @NotNull(message = "invalid evolutions list")
     private List<PokemonResquest> evolutions;
-
-    @JsonProperty("evolutionDetails")
-    @NotNull(message = "invalid evolutionDetails list")
-    private List<EvolutionDetail> evolutionDetails = new ArrayList<>();
 }

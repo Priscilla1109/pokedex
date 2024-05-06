@@ -25,10 +25,4 @@ public class Pokemon {
 
     @ElementCollection
     private List<String> type;
-
-    @OneToMany(mappedBy = "self", cascade = CascadeType.ALL)
-    private List<EvolutionDetail> evolutionDetails;
-
-    @OneToMany(mappedBy = "self", cascade = CascadeType.ALL)
-    private List<EvolutionPokemon> evolutions;
 }
