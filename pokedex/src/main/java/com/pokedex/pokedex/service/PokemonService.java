@@ -42,14 +42,20 @@ public class PokemonService {
     private RestTemplate restTemplate;
 
 
-    public EvolutionDetail addNewPokemon(String nameOrNumber) {
+    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
         // Verificar se o Pokémon já existe na Pokédex
-        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
-        EvolutionDetail evolutionDetail = PokemonMapper.toDomain(pokemonResponse);
-        //TODO: inserir EvolutionDetail na base
-        evolutionRepository.save(evolutionDetail);
+        List<PokemonResponse> pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        List<EvolutionDetail> evolutionDetails = new ArrayList<>();
+
+        for (PokemonResponse pokemonResponse : pokemonResponses) {
+            EvolutionDetail evolutionDetail = PokemonMapper.toDomain(pokemonResponse);
+            //TODO: inserir EvolutionDetail na base
+            EvolutionDetail evolutionSaved = evolutionRepository.save(evolutionDetail);
+            evolutionDetails.add(evolutionSaved);
+        }
+
         //TODO: retornar EvolutionDetail
-        return evolutionDetail;
+        return evolutionDetails;
     }
 
     public PokemonPageResponse listPokemons(int page, int pageSize) {
