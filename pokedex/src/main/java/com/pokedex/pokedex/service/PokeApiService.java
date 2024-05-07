@@ -32,13 +32,11 @@ public class PokeApiService {
     }
 
     //Busca Pokemon pelo nome ou numero
-    public List<PokemonResponse> getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {
+    public PokemonResponse getPokemonNameOrNumber(String nameOrNumber) throws PokemonNotFoundException {
         try {
-            ResponseEntity<List<PokemonResponse>> responseEntity = restTemplate.exchange(
+            ResponseEntity<PokemonResponse> responseEntity = restTemplate.getForEntity(
                     "http://localhost:8083/api-pokedex/v2/pokemon/" + nameOrNumber,
-                    HttpMethod.GET,
-                    null,
-                    new ParameterizedTypeReference<List<PokemonResponse>>() {}
+                    PokemonResponse.class
             );
 
             if (responseEntity.getStatusCode().is2xxSuccessful()) {

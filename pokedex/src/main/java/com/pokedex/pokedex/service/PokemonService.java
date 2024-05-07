@@ -42,20 +42,13 @@ public class PokemonService {
     private RestTemplate restTemplate;
 
 
-    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
+    public EvolutionDetail addNewPokemon(String nameOrNumber) {
         // Verificar se o Pokémon já existe na Pokédex
-        List<PokemonResponse> pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
-        List<EvolutionDetail> evolutionDetails = new ArrayList<>();
+        PokemonResponse pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
 
-        for (PokemonResponse pokemonResponse : pokemonResponses) {
-            EvolutionDetail evolutionDetail = PokemonMapper.toDomain(pokemonResponse);
-            //TODO: inserir EvolutionDetail na base
-            EvolutionDetail evolutionSaved = evolutionRepository.save(evolutionDetail);
-            evolutionDetails.add(evolutionSaved);
-        }
-
-        //TODO: retornar EvolutionDetail
-        return evolutionDetails;
+        EvolutionDetail evolutionDetail = PokemonMapper.toDomain(pokemonResponses);
+        //TODO: antes de inserir na base deve ser feito o seguinte: para cada pokemon do evolution detail devo salvar no pokemonRepository para depois referenciar
+        return evolutionRepository.save(evolutionDetail);
     }
 
     public PokemonPageResponse listPokemons(int page, int pageSize) {

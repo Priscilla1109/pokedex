@@ -26,15 +26,15 @@ public class PokemonController {
 
     //Endpoint de Consulta de Pokemons:
     @GetMapping("/pokemon/{nameOrNumber}")
-    public ResponseEntity<List<PokemonResponse>> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
-        List<PokemonResponse> pokemonList = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
-        return ResponseEntity.ok(pokemonList);
+    public ResponseEntity<PokemonResponse> getPokemonNameOrNumber(@PathVariable String nameOrNumber) throws PokemonNotFoundException {
+        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        return ResponseEntity.ok(pokemonResponse);
     }
 
     //Endpoint de Adição de Pokemons:
     @PostMapping("/add/{nameOrNumber}")
-    public ResponseEntity<List<EvolutionDetail>> addNewPokemon(@PathVariable String nameOrNumber) {
-        List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
+    public ResponseEntity<EvolutionDetail> addNewPokemon(@PathVariable String nameOrNumber) {
+        EvolutionDetail evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
         return ResponseEntity.ok(evolutionDetails);
     }
 
