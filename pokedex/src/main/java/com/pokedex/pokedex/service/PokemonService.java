@@ -47,7 +47,13 @@ public class PokemonService {
         PokemonResponse pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
 
         EvolutionDetail evolutionDetail = PokemonMapper.toDomain(pokemonResponses);
-        //TODO: antes de inserir na base deve ser feito o seguinte: para cada pokemon do evolution detail devo salvar no pokemonRepository para depois referenciar
+        for (Pokemon pokemon : evolutionDetail.getEvolution()) {
+            // Verifica se o Pokémon já existe no repositório
+            if (!pokemonRepository.existsById(pokemon.getNumber())) {
+                // Se não existe, salva o Pokémon no repositório
+                pokemonRepository.save(pokemon);
+            }
+        }
         return evolutionRepository.save(evolutionDetail);
     }
 
