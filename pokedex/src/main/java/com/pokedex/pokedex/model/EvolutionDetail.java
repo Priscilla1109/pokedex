@@ -15,7 +15,7 @@ public class EvolutionDetail { //detalhes sobre a evolução
     @GeneratedValue
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.PERSIST) //dúvida
     @JoinColumn(name = "pokemon_id")
     private Pokemon self;
 
@@ -23,6 +23,7 @@ public class EvolutionDetail { //detalhes sobre a evolução
 
     private String triggerName;
 
-    @ElementCollection
-    private List<Pokemon> evolution;
+    @OneToOne(cascade = CascadeType.PERSIST) //dúvida
+    @JoinColumn(name = "evolution_id")
+    private Pokemon evolution;
 }

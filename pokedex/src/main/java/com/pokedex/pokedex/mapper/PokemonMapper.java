@@ -9,21 +9,20 @@ import java.util.List;
 
 public class PokemonMapper {
 
-    public static EvolutionDetail toDomain(PokemonResponse pokemonResponse){
-        Pokemon pokemonSelf = new Pokemon();
-        pokemonSelf.setNumber(pokemonResponse.getNumber());
-        pokemonSelf.setName(pokemonResponse.getName());
-        pokemonSelf.setType(pokemonResponse.getType());
-        pokemonSelf.setImageUrl(pokemonResponse.getImageUrl());
+    public static List<EvolutionDetail> toDomain(PokemonResponse pokemonResponse){
+        Pokemon pokemonSelf = toPokemon(pokemonResponse);
 
-        EvolutionDetail evolution = new EvolutionDetail();
-        evolution.setSelf(pokemonSelf);
-        evolution.setEvolution(pokemonResponse.getEvolutions()
+        return pokemonResponse.getEvolutions()
             .stream()
-            .map(PokemonMapper::toPokemon)
-            .collect(Collectors.toList()));
+            .map(evolution -> toEvolutionDetail(evolution, pokemonSelf))
+            .collect(Collectors.toList());
+    }
 
-        return evolution;
+    private static EvolutionDetail toEvolutionDetail(PokemonResponse evolution, Pokemon pokemonSelf) {
+        var evolutionDetail = new EvolutionDetail();
+        evolutionDetail.setSelf(pokemonSelf);
+        evolutionDetail.setEvolution(toPokemon(evolution));
+        return evolutionDetail;
     }
 
     private static Pokemon toPokemon(PokemonResponse pokemonResponse) {
@@ -43,5 +42,15 @@ public class PokemonMapper {
         response.setImageUrl(pokemon.getImageUrl());
 
         return response;
+    }
+
+    public static PokemonResponse toResponse(List<EvolutionDetail> evolutionDetails) {
+        Pokemon self = evolutionDetails.get(0).getSelf();
+        PokemonResponse pokemonResponse = toResponse(self);
+        pokemonResponse.setEvolutions(evolutionDetails.stream()
+            .map(EvolutionDetail::getEvolution)
+            .map(PokemonMapper::toResponse)
+            .collect(Collectors.toList()));
+        return pokemonResponse;
     }
 }

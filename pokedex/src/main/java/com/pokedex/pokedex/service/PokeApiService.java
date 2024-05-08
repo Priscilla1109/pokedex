@@ -38,23 +38,9 @@ public class PokeApiService {
                     "http://localhost:8083/api-pokedex/v2/pokemon/" + nameOrNumber,
                     PokemonResponse.class
             );
-
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                return responseEntity.getBody();
-            } else if (responseEntity.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new PokemonNotFoundException("Pokemon not found with name or number: " + nameOrNumber);
-            } else {
-                // Lançar uma exceção genérica para outros códigos de erro HTTP
-                throw new InternalServerErrorException("Erro ao acessar a API PokeAPI. Código de erro HTTP: " + responseEntity.getStatusCodeValue());
-            }
+            return responseEntity.getBody();
         } catch (HttpClientErrorException e) {
-            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
-                throw new PokemonNotFoundException("Pokemon not found with name or number: " + nameOrNumber);
-            } else {
-                // Lançar uma exceção genérica para outros códigos de erro HTTP
-                throw new InternalServerErrorException("Erro ao acessar a API PokeAPI. Código de erro HTTP: " + e.getStatusCode().value());
-            }
+            throw new PokemonNotFoundException("Pokemon not found with name or number: " + nameOrNumber);
         }
     }
-
 }
