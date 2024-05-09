@@ -41,7 +41,11 @@ public class PokemonService {
 
         List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponses);
 
-        evolutionDetails.forEach(evolutionDetail -> evolutionRepository.save(evolutionDetail));
+        evolutionDetails.forEach(evolutionDetail -> {
+            evolutionDetail.setSelf(pokemonRepository.save(evolutionDetail.getSelf()));
+            evolutionDetail.setEvolution(pokemonRepository.save(evolutionDetail.getEvolution()));
+            evolutionRepository.save(evolutionDetail);
+        });
 
         return evolutionDetails;
     }

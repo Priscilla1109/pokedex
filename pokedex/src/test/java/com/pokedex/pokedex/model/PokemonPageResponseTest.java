@@ -12,17 +12,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PokemonPageResponseTest {
     private PokemonPageResponse pokemonPageResponse;
-    private List<Pokemon> pokemons;
+    private List<PokemonResponse> pokemons;
     private Meta meta;
 
     @BeforeEach
     public void setUp() {
         // Inicializa os mocks e objetos necessários antes de cada teste
-        Pokemon pokemon1 = new Pokemon();
+        PokemonResponse pokemon1 = new PokemonResponse();
         pokemon1.setName(Constant.NAME_BULBASAUR);
         pokemon1.setType(Constant.TYPE_BULBASAUR);
 
-        Pokemon pokemon2 = new Pokemon();
+        PokemonResponse pokemon2 = new PokemonResponse();
         pokemon2.setName("Charmander");
         pokemon2.setType(Arrays.asList("Fire"));
 

@@ -2,6 +2,8 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
+import com.pokedex.pokedex.model.PokemonPageResponse;
+import com.pokedex.pokedex.model.PokemonResquest;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import org.junit.jupiter.api.Test;
@@ -11,6 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,18 +31,19 @@ public class PokemonServiceTest {
     @InjectMocks
     private PokemonService pokemonService;
 
-    /*@Test
+    @Test
     public void testAddNewPokemon() {
         PokemonResquest mockPokemon = new PokemonResquest();
-        OngoingStubbing<T> tOngoingStubbing = when(pokemonRepository.save(mockPokemon)).thenReturn(mockPokemon);
+
+        when(pokemonRepository.save(mockPokemon)).thenReturn(mockPokemon);
 
         Pokemon addedPokemon = pokemonService.addNewPokemon(mockPokemon);
 
         assertEquals(mockPokemon, addedPokemon);
         verify(pokemonRepository, times(1)).save(mockPokemon);
-    }*/
+    }
 
-   /* @Test
+    @Test
     public void testListPokemons() {
         List<Pokemon> mockPokemonList = new ArrayList<>();
         mockPokemonList.add(new Pokemon());
@@ -48,9 +54,9 @@ public class PokemonServiceTest {
         PokemonPageResponse pageResponse = pokemonService.listPokemons(0, 10);
 
         assertEquals(mockPage.getContent(), pageResponse.getPokemonList());
-    }*/
+    }
 
-   /* @Test
+    @Test
     public void testDeletePokemon() {
         Long pokemonNumber = 1L;
         Pokemon mockPokemon = new Pokemon();
@@ -60,15 +66,15 @@ public class PokemonServiceTest {
 
         assertTrue(result);
         verify(pokemonRepository, times(1)).delete(mockPokemon);
-    }*/
+    }
 
-    /*@Test
+    @Test
     public void testDeletePokemon_NotFound() {
         Long pokemonNumber = 1L;
         when(pokemonRepository.findById(pokemonNumber)).thenReturn(Optional.empty());
 
         assertThrows(NoSuchElementException.class, () -> pokemonService.deletePokemonByNameOrNumber(pokemonNumber));
-    }*/
+    }
 
     @Test
     public void testGetPokemonByNumber() {
