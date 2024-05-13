@@ -32,7 +32,14 @@ public class PokemonController {
     @PostMapping("/add/{nameOrNumber}")
     public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) {
         List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
-        return ResponseEntity.ok(PokemonMapper.toResponse(evolutionDetails));
+        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        Pokemon pokemon = PokemonMapper.toPokemon(pokemonResponse);
+
+        if (!evolutionDetails.isEmpty()) {
+            return ResponseEntity.ok(PokemonMapper.toResponse(evolutionDetails));
+        } else {
+            return ResponseEntity.ok(PokemonMapper.toResponse(pokemon));
+        }
     }
 
     //Endpoint de Listagem de Pokemons:

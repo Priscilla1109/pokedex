@@ -11,12 +11,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
 
 //Classe que representa as regras de negócio
 @Service
@@ -56,31 +53,34 @@ public class PokemonService {
 
         List<PokemonResponse> pokemonsWithEvolutions = new ArrayList<>();
         for (Pokemon pokemon : pokemonPage.getContent()) {
-            PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon); // Converter Pokemon para PokemonResponse
+            PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
             pokemonsWithEvolutions.add(pokemonResponse);
         }
 
         return new PokemonPageResponse(pokemonsWithEvolutions,
                 new Meta(pokemonPage.getNumber(),
-                        pokemonPage.getSize(), (int) pokemonPage.getTotalElements(), pokemonPage.getTotalPages())); // Ajuste conforme necessário para criar a resposta correta
+                        pokemonPage.getSize(), (int) pokemonPage.getTotalElements(), pokemonPage.getTotalPages()));
     }
 
+    @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring
     public void deletePokemonByNameOrNumber(String nameOrNumber) {
         Pokemon pokemon = findByNameOrNumber(nameOrNumber);
-        if (pokemon!= null){
-            pokemonRepository.delete(pokemon);
-        } else {
-            throw new PokemonNotFoundException("Pokemon not found with name or number: " + nameOrNumber);
+        if (pokemon == null) {
+            throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
         }
+
+        // Excluir os registros dependentes na tabela EVOLUTION_DETAILS
+        evolutionRepository.deleteBySelfNumber(pokemon.getNumber());
+
+        // Finalmente, excluir o próprio Pokémon da tabela POKEMONS
+        pokemonRepository.delete(pokemon);
     }
 
     private Pokemon findByNameOrNumber(String nameOrNumber){
         try {
             long number = Long.parseLong(nameOrNumber);
-            // Se conseguiu converter para número, busca pelo número do Pokémon
             return pokemonRepository.findByNumber(number);
         } catch (NumberFormatException e) {
-            // Se não conseguiu converter para número, busca pelo nome do Pokémon
             return pokemonRepository.findByName(nameOrNumber);
         }
     }
@@ -91,6 +91,11 @@ public class PokemonService {
     }
 
     public List<EvolutionDetail> getEvolutionsByPokemonNumber(Long pokemonNumber){
-        return evolutionRepository.findBySelf_Number(pokemonNumber);
+        // Verifica se há evoluções para o Pokémon com o número fornecido
+        List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
+        if (evolutionDetail != null) {
+            return evolutionDetail;
+        }
+        return Collections.emptyList();
     }
 }

@@ -1,10 +1,10 @@
 package com.pokedex.pokedex.mapper;
 
 import com.pokedex.pokedex.model.*;
-import java.util.stream.Collectors;
-import org.springframework.data.domain.Page;
 
-import java.util.ArrayList;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 import java.util.List;
 
 public class PokemonMapper {
@@ -12,10 +12,16 @@ public class PokemonMapper {
     public static List<EvolutionDetail> toDomain(PokemonResponse pokemonResponse){
         Pokemon pokemonSelf = toPokemon(pokemonResponse);
         //TODO: ajustar retorno colocando if para se evolução for preenchida ou null
-        return pokemonResponse.getEvolutions()
-            .stream()
-            .map(evolution -> toEvolutionDetail(evolution, pokemonSelf))
-            .collect(Collectors.toList());
+        //Verificar se há evoluções disponíveis
+        List<PokemonResponse> evolutions = pokemonResponse.getEvolutions();
+        if (evolutions == null || evolutions.isEmpty()) {
+            // Se não houver evoluções, retornar uma lista vazia
+            return Collections.emptyList();
+        }
+        // Caso contrário, mapear as evoluções
+        return evolutions.stream()
+                .map(evolution -> toEvolutionDetail(evolution, pokemonSelf))
+                .collect(Collectors.toList());
     }
 
     private static EvolutionDetail toEvolutionDetail(PokemonResponse evolution, Pokemon pokemonSelf) {
@@ -25,7 +31,7 @@ public class PokemonMapper {
         return evolutionDetail;
     }
 
-    private static Pokemon toPokemon(PokemonResponse pokemonResponse) {
+    public static Pokemon toPokemon(PokemonResponse pokemonResponse) {
         Pokemon pokemon = new Pokemon();
         pokemon.setNumber(pokemonResponse.getNumber());
         pokemon.setName(pokemonResponse.getName());
@@ -45,12 +51,16 @@ public class PokemonMapper {
     }
 
     public static PokemonResponse toResponse(List<EvolutionDetail> evolutionDetails) {
-        Pokemon self = evolutionDetails.get(0).getSelf();
-        PokemonResponse pokemonResponse = toResponse(self);
-        pokemonResponse.setEvolutions(evolutionDetails.stream()
-            .map(EvolutionDetail::getEvolution)
-            .map(PokemonMapper::toResponse)
-            .collect(Collectors.toList()));
+        PokemonResponse pokemonResponse = new PokemonResponse();
+
+        if (!evolutionDetails.isEmpty()) {
+            Pokemon self = evolutionDetails.get(0).getSelf();
+            pokemonResponse = toResponse(self);
+            pokemonResponse.setEvolutions(evolutionDetails.stream()
+                    .map(EvolutionDetail::getEvolution)
+                    .map(PokemonMapper::toResponse)
+                    .collect(Collectors.toList()));
+        }
         return pokemonResponse;
     }
 }
