@@ -35,6 +35,7 @@ public class PokemonController {
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         Pokemon pokemon = PokemonMapper.toPokemon(pokemonResponse);
 
+        //revisar a necessidade do if
         if (!evolutionDetails.isEmpty()) {
             return ResponseEntity.ok(PokemonMapper.toResponse(evolutionDetails));
         } else {

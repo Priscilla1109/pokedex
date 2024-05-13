@@ -50,6 +50,8 @@ public class PokemonService {
     public PokemonPageResponse listPokemons(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<Pokemon> pokemonPage = pokemonRepository.findAll(pageable);
+        //TODO: refatorar o codigo para usar o evolution repository
+        //TODO: criar uma forma de mapear para o response agrupando os evolutionDetail pelo self
 
         List<PokemonResponse> pokemonsWithEvolutions = new ArrayList<>();
         for (Pokemon pokemon : pokemonPage.getContent()) {
