@@ -11,10 +11,6 @@ public class ObjectMapperConfig {
     @Bean
     public ObjectMapper objectMapper(){
         return new ObjectMapper();
-    }
-
-    @Bean
-    public PokemonMapper pokemonMapper() {
-        return new PokemonMapper();
+        //TODO: copiar o object mapper da pokeapi
     }
 }

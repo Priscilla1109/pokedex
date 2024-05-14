@@ -54,17 +54,24 @@ public class PokemonService {
 
         List<PokemonResponse> pokemonResponses = new ArrayList<>();
 
+        Map<Pokemon, List<EvolutionDetail>> allEvolutionsMap = new HashMap<>();
+
+        //TODO: refatorar para nao trazer mais as evoluções
+        //Itera sobre o EvolutionDetail e agrupa por pokemonSef
         for (EvolutionDetail evolutionDetail : evolutionPage.getContent()) {
             Pokemon pokemon = evolutionDetail.getSelf();
 
-            // Busca todas as evoluções associadas a este Pokémon
-            List<EvolutionDetail> allEvolutions = evolutionRepository.findBySelf_Name(pokemon.getName());
+            allEvolutionsMap.computeIfAbsent(pokemon, l -> new ArrayList<>()).add(evolutionDetail);
+        }
 
-            // Mapeia o Pokémon e suas evoluções para a resposta
+        //Mapeia os pokemonSelf e todas as suas evolutions
+        for (Map.Entry<Pokemon, List<EvolutionDetail>> entry : allEvolutionsMap.entrySet()){
+            Pokemon pokemon = entry.getKey();
+            List<EvolutionDetail> allEvolutions = entry.getValue();
+
             PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
             pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
 
-            // Adiciona o Pokémon mapeado à lista de respostas
             pokemonResponses.add(pokemonResponse);
         }
 
@@ -74,7 +81,7 @@ public class PokemonService {
 
     @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring
     public void deletePokemonByNameOrNumber(String nameOrNumber) {
-        PokemonResponse pokemon = getPokemonByNameOrNumber(nameOrNumber);
+        Pokemon pokemon = getPokemonByNameOrNumber(nameOrNumber);
         if (pokemon == null) {
             throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
         }
@@ -83,35 +90,15 @@ public class PokemonService {
         evolutionRepository.deleteBySelfNumber(pokemon.getNumber());
 
         // Finalmente, excluir o próprio Pokémon da tabela POKEMONS
-        Pokemon pokemonDelete = PokemonMapper.toPokemon(pokemon);
-        pokemonRepository.delete(pokemonDelete);
+        pokemonRepository.delete(pokemon);
     }
 
-    private PokemonResponse getPokemonByNameOrNumber(String nameOrNumber){
-        Pokemon pokemon;
-        List<EvolutionDetail> evolutionDetails;
-
-        if (nameOrNumber.matches("\\d+")) {
-            Long number = Long.parseLong(nameOrNumber);
-            pokemon = pokemonRepository.findByNumber(number);
-            evolutionDetails = evolutionRepository.findBySelf_Number(number);
-        } else {
-            pokemon = pokemonRepository.findByName(nameOrNumber);
-            evolutionDetails = evolutionRepository.findBySelf_Name(nameOrNumber);
-        }
-
-        if (pokemon != null) {
-            PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
-            // Verifica se há detalhes de evolução e mapeia-os para a resposta do Pokémon
-            if (evolutionDetails != null && !evolutionDetails.isEmpty()) {
-                pokemonResponse.setEvolutions(evolutionDetails.stream()
-                        .map(evolutionDetail -> PokemonMapper.toResponse(evolutionDetail.getEvolution()))
-                        .collect(Collectors.toList()));
-            }
-            return pokemonResponse;
-        } else {
-            // Retorna null se o Pokémon não for encontrado
-            return null;
+    private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
+        try {
+            long number = Long.parseLong(nameOrNumber);
+            return pokemonRepository.findByNumber(number);
+        } catch (NumberFormatException e) {
+            return pokemonRepository.findByName(nameOrNumber);
         }
     }
 
