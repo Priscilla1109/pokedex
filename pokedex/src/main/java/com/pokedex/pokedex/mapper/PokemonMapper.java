@@ -11,7 +11,6 @@ public class PokemonMapper {
 
     public static List<EvolutionDetail> toDomain(PokemonResponse pokemonResponse){
         Pokemon pokemonSelf = toPokemon(pokemonResponse);
-        //TODO: ajustar retorno colocando if para se evolução for preenchida ou null
         //Verificar se há evoluções disponíveis
         List<PokemonResponse> evolutions = pokemonResponse.getEvolutions();
         if (evolutions == null || evolutions.isEmpty()) {
@@ -62,5 +61,11 @@ public class PokemonMapper {
                     .collect(Collectors.toList()));
         }
         return pokemonResponse;
+    }
+
+    public static List<PokemonResponse> toResponseList(List<EvolutionDetail> evolutionDetails) {
+        return evolutionDetails.stream()
+                .map(evolutionDetail -> toResponse(evolutionDetail.getEvolution()))
+                .collect(Collectors.toList());
     }
 }

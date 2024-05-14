@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface EvolutionRepository extends JpaRepository<EvolutionDetail, Long> {
     List<EvolutionDetail> findBySelf_Number(Long pokemonNumber);
+    List<EvolutionDetail> findBySelf_Name(String pokemonName);
 
     void deleteBySelfNumber(Long pokemonNumber);
 }
