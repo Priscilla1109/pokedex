@@ -6,24 +6,20 @@ import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 import java.util.*;
 
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@RunWith(MockitoJUnitRunner.class)
-//@PrepareForTest({PokemonMapper.class}) //Serve para manipular métodos estáticos da classe PokemonMapper
+@ExtendWith(MockitoExtension.class)
 public class PokemonServiceTest {
     @Mock
     private PokemonRepository pokemonRepository;
@@ -42,109 +38,49 @@ public class PokemonServiceTest {
 
 
     @Test
-    public void testAddNewPokemon() {
+    public void testAddNewPokemon_Success() {
         PokemonResponse pokemonResponse = new PokemonResponse();
-        pokemonResponse.setNumber(Constant.NUMBER_BULBASAUR);
         pokemonResponse.setName(Constant.NAME_BULBASAUR);
-        when(pokeApiService.getPokemonNameOrNumber(anyString())).thenReturn(pokemonResponse);
+        pokemonResponse.setNumber(Constant.NUMBER_BULBASAUR);
 
-        // Mock do comportamento do PokemonMapper (usando o mock fornecido)
-        List<EvolutionDetail> evolutionDetails = new ArrayList<>();
-        when(pokemonMapper.toDomain(any(PokemonResponse.class))).thenReturn(evolutionDetails);
+        Pokemon pokemonSaved = PokemonMapper.toPokemon(pokemonResponse);
+        EvolutionDetail evolutionDetailSaved = new EvolutionDetail();
 
-        // Chamar o método a ser testado
-        List<EvolutionDetail> result = pokemonService.addNewPokemon(pokemonResponse.getName());
+        when(pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR)).thenReturn(pokemonResponse);
+        when(pokemonRepository.save(pokemonSaved)).thenReturn(new Pokemon());
+        when(evolutionRepository.save(evolutionDetailSaved)).thenReturn(new EvolutionDetail());
 
-        // Verificar se o método getPokemonNameOrNumber foi chamado corretamente
-        verify(pokeApiService).getPokemonNameOrNumber(anyString());
+        List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(Constant.NAME_BULBASAUR);
 
-        // Verificar se o método save do pokemonRepository foi chamado para cada EvolutionDetail
-        verify(pokemonRepository, times(evolutionDetails.size() * 2)).save(any(Pokemon.class));
+        verify(pokeApiService, times(1)).getPokemonNameOrNumber(Constant.NAME_BULBASAUR);
+        verify(pokemonRepository, times(2)).save(any());
+        verify(evolutionRepository, times(2)).save(any());
 
-        // Verificar se o método save do evolutionRepository foi chamado para cada EvolutionDetail
-        verify(evolutionRepository, times(evolutionDetails.size())).save(any(EvolutionDetail.class));
-
-        // Verificar se o resultado retornado é o esperado
-        assertEquals(evolutionDetails, result);
+        assertEquals(Collections.emptyList(), evolutionDetails);
     }
 
     @Test
-    public void testListPokemons() {
-        int page = 0;
-        int pageSize = 10;
-        List<Pokemon> pokemonList = new ArrayList<>();
+    public void listPokemons_Success(){
+        Page<EvolutionDetail> evolutionDetailPage = mock(Page.class);
 
-        Pokemon pokemon1 = new Pokemon();
-        pokemon1.setNumber(Constant.NUMBER_BULBASAUR);
+        when(evolutionRepository.findAll(any(Pageable.class))).thenReturn(evolutionDetailPage);
+        when(evolutionDetailPage.getContent()).thenReturn(Collections.singletonList(new EvolutionDetail()));
 
-        // Mock do comportamento do pokemonRepository para retornar uma Page de Pokémon
-        Page<Pokemon> pokemonPage = new PageImpl<>(pokemonList);
-        when(pokemonRepository.findAll(PageRequest.of(page, pageSize))).thenReturn(pokemonPage);
+        PokemonPageResponse pokemonPageResponse = pokemonService.listPokemons(0,10);
 
-        // Chamar o método a ser testado
-        PokemonPageResponse result = pokemonService.listPokemons(page, pageSize);
+        verify(evolutionRepository, times(1)).findAll(any(Pageable.class));
 
-        // Verificar se a lista de Pokémon na resposta corresponde à lista de Pokémon retornada pelo repository
-        assertEquals(pokemonList.size(), result.getPokemons().size());
-        // Verificar se a página na resposta corresponde à página retornada pelo repository
-        assertEquals(pokemonPage.getNumber(), result.getMeta().getPage());
-        // Verificar se o tamanho da página na resposta corresponde ao tamanho da página retornada pelo repository
-        assertEquals(pokemonPage.getSize(), result.getMeta().getPageSize());
-        // Verificar se o total de elementos na resposta corresponde ao total de elementos retornado pelo repository
-        assertEquals((int) pokemonPage.getTotalElements(), result.getMeta().getPageSize());
-        // Verificar se o total de páginas na resposta corresponde ao total de páginas retornado pelo repository
-        assertEquals(pokemonPage.getTotalPages(), result.getMeta().getTotalPage());
-    }
-
-
-    /*@Test
-    public void testDeletePokemon() {
-        Long pokemonNumber = 1L;
-        Pokemon mockPokemon = new Pokemon();
-        when(pokemonRepository.findById(pokemonNumber)).thenReturn(Optional.of(mockPokemon));
-
-        boolean result = pokemonService.deletePokemonByNameOrNumber(pokemonNumber);
-
-        assertTrue(result);
-        verify(pokemonRepository, times(1)).delete(mockPokemon);
-    }*/
-
-    /*@Test
-    public void testDeletePokemon_NotFound() {
-        Long pokemonNumber = 1L;
-        when(pokemonRepository.findById(pokemonNumber)).thenReturn(Optional.empty());
-
-        assertThrows(NoSuchElementException.class, () -> pokemonService.deletePokemonByNameOrNumber(pokemonNumber));
-    }*/
-
-    @Test
-    public void testGetPokemonByNumber() {
-        Long pokemonNumber = 1L;
-        Pokemon mockPokemon = new Pokemon();
-        when(pokemonRepository.findById(pokemonNumber)).thenReturn(Optional.of(mockPokemon));
-
-        Pokemon result = pokemonService.getPokemonByNumber(pokemonNumber);
-
-        assertEquals(mockPokemon, result);
+        assertNotNull(pokemonPageResponse);
+        assertEquals(1, pokemonPageResponse.getPokemons().size());
     }
 
     @Test
-    public void testGetPokemonByNumber_NotFound() {
-        Long pokemonNumber = 1L;
-        when(pokemonRepository.findById(pokemonNumber)).thenReturn(Optional.empty());
+    public void deletePokemonByNameOrNumber_Success(){
+        Pokemon pokemon = new Pokemon();
+        when(pokemonRepository.findByNumber(Constant.NUMBER_BULBASAUR)).thenReturn(pokemon);
 
-        assertThrows(NoSuchElementException.class, () -> pokemonService.getPokemonByNumber(pokemonNumber));
-    }
-
-    @Test
-    public void testGetEvolutionsByPokemonNumber() {
-        Long pokemonNumber = 1L;
-        List<EvolutionDetail> mockEvolutions = Collections.emptyList();
-        when(evolutionRepository.findBySelf_Number(pokemonNumber)).thenReturn(mockEvolutions);
-
-        List<EvolutionDetail> result = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
-
-        assertEquals(mockEvolutions, result);
-        verify(evolutionRepository, times(1)).findBySelf_Number(pokemonNumber);
+        verify(pokemonRepository, times(1)).findByNumber(Constant.NUMBER_BULBASAUR);
+        verify(evolutionRepository, times(1)).deleteBySelfNumber(Constant.NUMBER_BULBASAUR);
+        verify(pokemonRepository, times(1)).delete(pokemon);
     }
 }

@@ -3,6 +3,7 @@ package com.pokedex.pokedex.mapper;
 import com.pokedex.pokedex.model.*;
 
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import java.util.List;
@@ -11,16 +12,12 @@ public class PokemonMapper {
 
     public static List<EvolutionDetail> toDomain(PokemonResponse pokemonResponse){
         Pokemon pokemonSelf = toPokemon(pokemonResponse);
-        //Verificar se há evoluções disponíveis
-        List<PokemonResponse> evolutions = pokemonResponse.getEvolutions();
-        if (evolutions == null || evolutions.isEmpty()) {
-            // Se não houver evoluções, retornar uma lista vazia
-            return Collections.emptyList();
-        }
-        // Caso contrário, mapear as evoluções
-        return evolutions.stream()
-                .map(evolution -> toEvolutionDetail(evolution, pokemonSelf))
-                .collect(Collectors.toList());
+
+        return Optional.ofNullable(pokemonResponse.getEvolutions())
+            .orElse(Collections.emptyList())
+            .stream()
+            .map(evolution -> toEvolutionDetail(evolution, pokemonSelf))
+            .collect(Collectors.toList());
     }
 
     private static EvolutionDetail toEvolutionDetail(PokemonResponse evolution, Pokemon pokemonSelf) {
@@ -47,20 +44,6 @@ public class PokemonMapper {
         response.setImageUrl(pokemon.getImageUrl());
 
         return response;
-    }
-
-    public static PokemonResponse toResponse(List<EvolutionDetail> evolutionDetails) {
-        PokemonResponse pokemonResponse = new PokemonResponse();
-
-        if (!evolutionDetails.isEmpty()) {
-            Pokemon self = evolutionDetails.get(0).getSelf();
-            pokemonResponse = toResponse(self);
-            pokemonResponse.setEvolutions(evolutionDetails.stream()
-                    .map(EvolutionDetail::getEvolution)
-                    .map(PokemonMapper::toResponse)
-                    .collect(Collectors.toList()));
-        }
-        return pokemonResponse;
     }
 
     public static List<PokemonResponse> toResponseList(List<EvolutionDetail> evolutionDetails) {

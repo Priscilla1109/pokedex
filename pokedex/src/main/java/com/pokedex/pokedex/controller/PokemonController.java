@@ -1,7 +1,6 @@
 package com.pokedex.pokedex.controller;
 
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
-import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
@@ -33,14 +32,8 @@ public class PokemonController {
     public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) {
         List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
-        Pokemon pokemon = PokemonMapper.toPokemon(pokemonResponse);
 
-        //revisar a necessidade do if
-        if (!evolutionDetails.isEmpty()) {
-            return ResponseEntity.ok(PokemonMapper.toResponse(evolutionDetails));
-        } else {
-            return ResponseEntity.ok(PokemonMapper.toResponse(pokemon));
-        }
+        return ResponseEntity.ok(pokemonResponse);
     }
 
     //Endpoint de Listagem de Pokemons:
@@ -48,7 +41,6 @@ public class PokemonController {
     public ResponseEntity<PokemonPageResponse> listPokemons(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int pageSize){
-        // Recupera a lista de PokémonPageResponse
         PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
 
         return ResponseEntity.ok(pokemonPage);
@@ -61,9 +53,10 @@ public class PokemonController {
         return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
     }
 
+    //Endpoint de Busca de Evoluções dos Pokemons:
     @GetMapping("/evolutions/{pokemonNumber}")
-    public ResponseEntity<List<EvolutionDetail>> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
-        List<EvolutionDetail> evolutionDetails = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
-        return ResponseEntity.ok(evolutionDetails);
+    public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
+        PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
+        return ResponseEntity.ok(pokemonResponse);
     }
 }

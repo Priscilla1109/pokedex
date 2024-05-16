@@ -5,6 +5,7 @@ import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.repository.EvolutionRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,7 +13,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,30 +52,18 @@ public class PokemonService {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<EvolutionDetail> evolutionPage = evolutionRepository.findAll(pageable);
 
-        List<PokemonResponse> pokemonResponses = new ArrayList<>();
+        Set<PokemonResponse> pokemonResponses = new HashSet<>();
 
-        Map<Pokemon, List<EvolutionDetail>> allEvolutionsMap = new HashMap<>();
-
-        //TODO: refatorar para nao trazer mais as evoluções
-        //Itera sobre o EvolutionDetail e agrupa por pokemonSef
-        for (EvolutionDetail evolutionDetail : evolutionPage.getContent()) {
+        for (EvolutionDetail evolutionDetail : evolutionPage.getContent()){
             Pokemon pokemon = evolutionDetail.getSelf();
-
-            allEvolutionsMap.computeIfAbsent(pokemon, l -> new ArrayList<>()).add(evolutionDetail);
-        }
-
-        //Mapeia os pokemonSelf e todas as suas evolutions
-        for (Map.Entry<Pokemon, List<EvolutionDetail>> entry : allEvolutionsMap.entrySet()){
-            Pokemon pokemon = entry.getKey();
-            List<EvolutionDetail> allEvolutions = entry.getValue();
-
             PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
-            pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
 
+            List<EvolutionDetail> allEvolutions = evolutionRepository.findBySelf_Number(pokemon.getNumber());
+            pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
             pokemonResponses.add(pokemonResponse);
         }
 
-        return new PokemonPageResponse(pokemonResponses,
+        return new PokemonPageResponse(new ArrayList<>(pokemonResponses),
                 new Meta(evolutionPage.getNumber(), evolutionPage.getSize(), (int) evolutionPage.getTotalElements(), evolutionPage.getTotalPages()));
     }
 
@@ -86,10 +74,8 @@ public class PokemonService {
             throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
         }
 
-        // Excluir os registros dependentes na tabela EVOLUTION_DETAILS
         evolutionRepository.deleteBySelfNumber(pokemon.getNumber());
 
-        // Finalmente, excluir o próprio Pokémon da tabela POKEMONS
         pokemonRepository.delete(pokemon);
     }
 
@@ -107,12 +93,22 @@ public class PokemonService {
         return pokemon.orElseThrow(NoSuchElementException::new);
     }
 
-    public List<EvolutionDetail> getEvolutionsByPokemonNumber(Long pokemonNumber){
+    public PokemonResponse getEvolutionsByPokemonNumber(Long pokemonNumber){
         // Verifica se há evoluções para o Pokémon com o número fornecido
         List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
-        if (evolutionDetail != null) {
-            return evolutionDetail;
+        if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
+            EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
+            Pokemon mainPokemon = mainPokemonDetail.getSelf();
+
+            PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
+
+            List<PokemonResponse> evolutionResponse = evolutionDetail.stream()
+                .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
+                .collect(Collectors.toList());
+            pokemonResponse.setEvolutions(evolutionResponse);
+
+            return pokemonResponse;
         }
-        return Collections.emptyList();
+        return null;
     }
 }

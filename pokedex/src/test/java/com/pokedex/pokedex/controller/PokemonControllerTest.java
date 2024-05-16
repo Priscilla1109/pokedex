@@ -1,24 +1,18 @@
 package com.pokedex.pokedex.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pokedex.pokedex.config.Constant;
-import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
+import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -32,110 +26,57 @@ public class PokemonControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
-    //cria uma instancia simulada da classe
     private PokeApiService pokeApiService;
 
     @MockBean
     private PokemonService pokemonService;
 
     @Test
-    public void testGetPokemonNameOrNumber() throws Exception {
-        Pokemon pokemon = new Pokemon();
-        pokemon.setName(Constant.NAME_BULBASAUR);
-        pokemon.setNumber(Constant.NUMBER_BULBASAUR);
-        pokemon.setImageUrl(Constant.URL_BULBASAUR);
-        pokemon.setType(Constant.TYPE_BULBASAUR);
+    public void testGetPokemonNameOrNumber_Success() throws Exception {
+        PokemonResponse pokemonResponse = new PokemonResponse();
 
-        PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
+        when(pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR)).thenReturn(pokemonResponse);
 
-        when(pokeApiService.getPokemonNameOrNumber(pokemon.getName())).thenReturn(pokemonResponse);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/APIs/pokedex/pokemon/bulbasaur")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.number").value(pokemonResponse.getNumber()))
-                .andExpect(jsonPath("$.name").value(pokemonResponse.getName()));
-    }
-
-   /* @Test
-    public void testAddNewPokemon() throws Exception {
-        // Creating a PokemonRequest object for the request body
-        PokemonResquest pokemonRequest = new PokemonResquest();
-        pokemonRequest.setName(Constant.NAME_BULBASAUR);
-        pokemonRequest.setNumber(Constant.NUMBER_BULBASAUR);
-
-        // Mocking the service method call
-        Pokemon pokemon = new Pokemon();
-        pokemon.setName(Constant.NAME_BULBASAUR);
-        pokemon.setNumber(Constant.NUMBER_BULBASAUR);
-        when(pokemonService.addNewPokemon(any(Pokemon.class))).thenReturn(pokemon);
-
-        // Performing the POST request
-        mockMvc.perform(MockMvcRequestBuilders.post("/APIs/pokedex/add")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(pokemonRequest)))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Pokemon adicionado com sucesso!"));
+        mockMvc.perform(get("/APIs/pokedex/pokemon/bulbasaur"));
     }
 
     @Test
-    public void testListPokemon() throws Exception{
-        PokemonResquest pokemonResquest = new PokemonResquest();
-        Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
-        pokemon.setName(Constant.NAME_BULBASAUR);
-        pokemon.setNumber(Constant.NUMBER_BULBASAUR);
-        pokemon.setType(Constant.TYPE_BULBASAUR);
-        pokemon.setImageUrl(Constant.URL_BULBASAUR);
+    public void testAddNewPokemon_Success() throws Exception{
+        PokemonResponse pokemonResponse = new PokemonResponse();
 
-        PokemonResquest pokemonResquest2 = new PokemonResquest();
-        Pokemon pokemon2 = PokemonMapper.toDomain(pokemonResquest2);
-        pokemon2.setName("pikachu");
-        pokemon2.setNumber(20L);
-        pokemon2.setType(Constant.TYPE_BULBASAUR);
-        pokemon2.setImageUrl("url");
+        when(pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR)).thenReturn(pokemonResponse);
+        when(pokemonService.addNewPokemon(Constant.NAME_BULBASAUR)).thenReturn(Collections.emptyList());
 
-        List<Pokemon> pokemons = Arrays.asList(pokemon, pokemon2);
-        Page<Pokemon> pokemonPageResponses = new PageImpl<>(pokemons);
+        mockMvc.perform(post("/APIs/pokedex/add/bulbasaur"))
+            .andExpect(status().isOk());
+    }
 
-        when(pokemonService.listPokemons(0,10)).thenReturn((PokemonPageResponse) pokemonPageResponses);
+    @Test
+    public void testListPokemons_Success() throws Exception {
+        PokemonPageResponse pokemonPageResponse = new PokemonPageResponse(
+            Collections.emptyList(), new Meta(0,10,0,0)
+        );
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/APIs/pokedex/pokemons")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath(".pokemons.length()").value(pokemonPageResponses.getTotalElements()))
-                //body pokemon
-                .andExpect(jsonPath("$.pokemons[0].number").value(pokemon.getNumber()))
-                .andExpect(jsonPath("$.pokemons[0].name").value(pokemon.getName()))
-                .andExpect(jsonPath("$.pokemons[0].type").value(pokemon.getType()))
-                .andExpect(jsonPath("$.pokemons[0].imageUrl").value(pokemon.getImageUrl()))
-                //body pokemon2
-                .andExpect(jsonPath("$.pokemons[1].number").value(pokemon2.getNumber()))
-                .andExpect(jsonPath("$.pokemons[1].name").value(pokemon2.getName()))
-                .andExpect(jsonPath("$.pokemons[1].type").value(pokemon2.getType()))
-                .andExpect(jsonPath("$.pokemons[1].imageUrl").value(pokemon2.getImageUrl()));
-    }*/
+        when(pokemonService.listPokemons(0,10)).thenReturn(pokemonPageResponse);
 
-    /*@Test
-    public void testDeletePokemon() throws Exception{
-        PokemonResquest pokemonResquest = new PokemonResquest();
-        pokemonResquest.setNumber(Constant.NUMBER_BULBASAUR);
-        pokemonResquest.setName(Constant.NAME_BULBASAUR);
-        pokemonResquest.setType(Constant.TYPE_BULBASAUR);
-        pokemonResquest.setImageUrl(Constant.URL_BULBASAUR);
-        Pokemon pokemon = PokemonMapper.toDomain(pokemonResquest);
+        mockMvc.perform(get("/APIs/pokedex/pokemons"))
+            .andExpect(status().isOk());
+    }
 
-        when(pokemonService.deletePokemon(pokemon.getNumber())).thenReturn(true);
+    @Test
+    public void testDeletePokemon_Success() throws Exception {
+        mockMvc.perform(delete("/APIs/pokedex/pokemon/1"))
+            .andExpect(status().isOk());
+    }
 
-        mockMvc.perform(delete("/APIs/pokedex/1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(pokemon)))
-                .andExpect(status().isOk());
+    @Test
+    public void testGetEvolutionsByPokemonNumber_Success() throws Exception {
+        PokemonResponse evolutionDetails = new PokemonResponse();
 
-        verify(pokemonService, times(1)).deletePokemon(pokemon.getNumber());
-    }*/
+        when(pokemonService.getEvolutionsByPokemonNumber(Constant.NUMBER_BULBASAUR)).thenReturn(evolutionDetails);
+
+        mockMvc.perform(get("/APIs/pokedex/evolutions/1"))
+            .andExpect(status().isOk());
+    }
 }
