@@ -28,10 +28,6 @@ public class PokemonService {
     @Autowired
     private EvolutionRepository evolutionRepository;
 
-    public PokemonService(PokeApiService pokeApiService){
-        this.pokeApiService = pokeApiService;
-    }
-
     @Transactional
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
         // Verificar se o Pokémon já existe na Pokédex
@@ -97,18 +93,22 @@ public class PokemonService {
         // Verifica se há evoluções para o Pokémon com o número fornecido
         List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
         if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
-            EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
-            Pokemon mainPokemon = mainPokemonDetail.getSelf();
-
-            PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
-
-            List<PokemonResponse> evolutionResponse = evolutionDetail.stream()
-                .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
-                .collect(Collectors.toList());
-            pokemonResponse.setEvolutions(evolutionResponse);
-
-            return pokemonResponse;
+            return null;
         }
-        return null;
+
+        EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
+        Pokemon mainPokemon =mainPokemonDetail.getSelf();
+
+        PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
+        List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
+        pokemonResponse.setEvolutions(evolutionresponse);
+
+        return pokemonResponse;
+    }
+
+    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
+        return evolutionDetails.stream()
+            .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
+            .collect(Collectors.toList());
     }
 }
