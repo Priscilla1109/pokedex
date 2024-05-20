@@ -1,7 +1,0 @@
----------------------------BUGS POKEDEX---------------------------
-12/05
-- DeletPokemon está retornando erro 500:
-    Esse erro ocorre porque ela está tentando excluir um Pokémon que tem registros associados na tabela EVOLUTION_DETAILS. A restrição de integridade referencial está impedindo a exclusão porque há registros dependentes na tabela EVOLUTION_DETAILS que referenciam o Pokémon que você está tentando excluir na tabela POKEMONS.
-
-- ListPokemons:
-    Ao listar os pokemons que foram adicionados na Pokedex, ele nao tras a lista de evolutions, mesmo para aqueles pokemons que tem ela preenchida, está retornando null
