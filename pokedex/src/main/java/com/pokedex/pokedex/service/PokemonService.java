@@ -1,13 +1,10 @@
 package com.pokedex.pokedex.service;
 
-import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
-import java.util.stream.Collectors;
+import com.pokedex.pokedex.repository.EvolutionDetailRepository;
+import com.pokedex.pokedex.repository.PokemonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,7 +21,11 @@ public class PokemonService {
     private PokeApiService pokeApiService;
 
     @Autowired
-    private EvolutionRepository evolutionRepository;
+    private EvolutionDetailRepository evolutionRepository;
+
+    public PokemonService(PokeApiService pokeApiService){
+        this.pokeApiService = pokeApiService;
+    }
 
     @Transactional
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
@@ -34,15 +35,15 @@ public class PokemonService {
         List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponses);
 
         evolutionDetails.forEach(evolutionDetail -> {
-            evolutionDetail.setSelf(pokemonRepository.save(evolutionDetail.getSelf()));
-            evolutionDetail.setEvolution(pokemonRepository.save(evolutionDetail.getEvolution()));
-            evolutionRepository.save(evolutionDetail);
+            evolutionDetail.setSelf(pokemonRepository.insert(evolutionDetail.getSelf()));
+            evolutionDetail.setEvolution(pokemonRepository.insert(evolutionDetail.getEvolution()));
+            evolutionRepository.insert(evolutionDetail);
         });
 
         return evolutionDetails;
     }
 
-    public PokemonPageResponse listPokemons(int page, int pageSize) {
+    /*public PokemonPageResponse listPokemons(int page, int pageSize) {
         Pageable pageable = PageRequest.of(page, pageSize);
         Page<EvolutionDetail> evolutionPage = evolutionRepository.findAll(pageable);
 
@@ -72,17 +73,17 @@ public class PokemonService {
 
         pokemonRepository.delete(pokemon);
     }
-
-    private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
+*/
+   /* private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
         try {
             long number = Long.parseLong(nameOrNumber);
             return pokemonRepository.findByNumber(number);
         } catch (NumberFormatException e) {
             return pokemonRepository.findByName(nameOrNumber);
         }
-    }
+    }*/
 
-    public Pokemon getPokemonByNumber(Long number) {
+    /*public Pokemon getPokemonByNumber(Long number) {
         Optional<Pokemon> pokemon = pokemonRepository.findById(number);
         return pokemon.orElseThrow(NoSuchElementException::new);
     }
@@ -91,22 +92,18 @@ public class PokemonService {
         // Verifica se há evoluções para o Pokémon com o número fornecido
         List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
         if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
-            return null;
+            EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
+            Pokemon mainPokemon = mainPokemonDetail.getSelf();
+
+            PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
+
+            List<PokemonResponse> evolutionResponse = evolutionDetail.stream()
+                .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
+                .collect(Collectors.toList());
+            pokemonResponse.setEvolutions(evolutionResponse);
+
+            return pokemonResponse;
         }
-
-        EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
-        Pokemon mainPokemon =mainPokemonDetail.getSelf();
-
-        PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
-        List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
-        pokemonResponse.setEvolutions(evolutionresponse);
-
-        return pokemonResponse;
-    }
-
-    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
-        return evolutionDetails.stream()
-            .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
-            .collect(Collectors.toList());
-    }
+        return null;
+    }*/
 }

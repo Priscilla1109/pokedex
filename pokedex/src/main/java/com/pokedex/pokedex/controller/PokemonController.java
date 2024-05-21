@@ -36,7 +36,7 @@ public class PokemonController {
         return ResponseEntity.ok(pokemonResponse);
     }
 
-    //Endpoint de Listagem de Pokemons:
+    /*//Endpoint de Listagem de Pokemons:
     @GetMapping("/pokemons")
     public ResponseEntity<PokemonPageResponse> listPokemons(
             @RequestParam(defaultValue = "0") int page,
@@ -58,5 +58,5 @@ public class PokemonController {
     public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
         PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
         return ResponseEntity.ok(pokemonResponse);
-    }
+    }*/
 }

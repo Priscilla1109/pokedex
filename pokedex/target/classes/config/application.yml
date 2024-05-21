@@ -8,10 +8,15 @@ spring:
     password: pokedexadm
   jpa:
     hibernate:
-      ddl-auto: create-drop
-    database-platform: org.hibernate.dialect.H2Dialect
+      ddl-auto: none
+    show-sql: true
   h2:
     console:
       enabled: true
+      path: /h2-console
 server:
   port: '8082'
+
+jdbi:
+  datasource:
+    default:
