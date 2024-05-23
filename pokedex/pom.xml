@@ -10,6 +10,7 @@
 	<properties>
 		<java.version>11</java.version>
 		<spring-version>2.7.9</spring-version>
+		<jdbi-version>3.39.0</jdbi-version>
 	</properties>
 	<dependencies>
 		<!--dependências do spring boot-->
@@ -78,6 +79,24 @@
 			<artifactId>h2</artifactId>
 			<version>2.2.222</version>
 			<scope>runtime</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-spring5</artifactId>
+			<version>${jdbi-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-sqlobject</artifactId>
+			<version>${jdbi-version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.jdbi</groupId>
+			<artifactId>jdbi3-stringtemplate4</artifactId>
+			<version>${jdbi-version}</version>
 		</dependency>
 
 		<dependency>

@@ -1,3 +1,4 @@
+com\pokedex\pokedex\config\Constant.class
 com\pokedex\pokedex\exception\InternalServerErrorException.class
 com\pokedex\pokedex\repository\PokemonRepository.class
 com\pokedex\pokedex\model\PokemonResponse.class
@@ -5,11 +6,15 @@ com\pokedex\pokedex\advice\PokemonHandlerException.class
 com\pokedex\pokedex\controller\PokemonController.class
 com\pokedex\pokedex\service\PokeApiService.class
 com\pokedex\pokedex\exception\PokemonNotFoundException.class
+com\pokedex\pokedex\config\RestTemplateConfig.class
 com\pokedex\pokedex\model\Meta.class
+com\pokedex\pokedex\config\ObjectMapperConfig.class
 com\pokedex\pokedex\model\PokemonResquest.class
 com\pokedex\pokedex\service\PokemonService.class
 com\pokedex\pokedex\model\Pokemon.class
 com\pokedex\pokedex\PokedexApplication.class
 com\pokedex\pokedex\mapper\PokemonMapper.class
 com\pokedex\pokedex\exception\BadRequestException.class
+com\pokedex\pokedex\repository\EvolutionRepository.class
+com\pokedex\pokedex\model\EvolutionDetail.class
 com\pokedex\pokedex\model\PokemonPageResponse.class

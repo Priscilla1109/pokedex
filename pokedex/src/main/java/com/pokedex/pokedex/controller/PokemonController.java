@@ -37,26 +37,26 @@ public class PokemonController {
     }
 
     //Endpoint de Listagem de Pokemons:
-    @GetMapping("/pokemons")
-    public ResponseEntity<PokemonPageResponse> listPokemons(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int pageSize){
-        PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
-
-        return ResponseEntity.ok(pokemonPage);
-    }
-
-    //Endpoint de Deleção de Pokemons:
-    @DeleteMapping("/pokemon/{nameOrNumber}")
-    public ResponseEntity<String> deletePokemonByNameOrNumber(@PathVariable String nameOrNumber){
-        pokemonService.deletePokemonByNameOrNumber(nameOrNumber);
-        return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
-    }
-
-    //Endpoint de Busca de Evoluções dos Pokemons:
-    @GetMapping("/evolutions/{pokemonNumber}")
-    public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
-        PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
-        return ResponseEntity.ok(pokemonResponse);
-    }
+//    @GetMapping("/pokemons")
+//    public ResponseEntity<PokemonPageResponse> listPokemons(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int pageSize){
+//        PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
+//
+//        return ResponseEntity.ok(pokemonPage);
+//    }
+//
+//    //Endpoint de Deleção de Pokemons:
+//    @DeleteMapping("/pokemon/{nameOrNumber}")
+//    public ResponseEntity<String> deletePokemonByNameOrNumber(@PathVariable String nameOrNumber){
+//        pokemonService.deletePokemonByNameOrNumber(nameOrNumber);
+//        return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
+//    }
+//
+//    //Endpoint de Busca de Evoluções dos Pokemons:
+//    @GetMapping("/evolutions/{pokemonNumber}")
+//    public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
+//        PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
+//        return ResponseEntity.ok(pokemonResponse);
+//    }
 }
