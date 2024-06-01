@@ -1,7 +1,7 @@
 package com.pokedex.pokedex.repository;
 
-import com.pokedex.pokedex.mapper.TypePokemonRowMapper;
-import com.pokedex.pokedex.model.TypePokemon;
+import com.pokedex.pokedex.mapper.PokemonRowMapper;
+import com.pokedex.pokedex.model.Pokemon;
 import java.util.Optional;
 import org.jdbi.v3.sqlobject.config.RegisterRowMapper;
 import org.jdbi.v3.sqlobject.customizer.Bind;
@@ -12,17 +12,21 @@ import org.jdbi.v3.sqlobject.statement.SqlQuery;
 import org.jdbi.v3.sqlobject.statement.SqlUpdate;
 import org.springframework.stereotype.Repository;
 
+//Classe que fornece os métodos para acessar o banco de dados
 @Repository
 @UseClasspathSqlLocator
-public interface TypeRepository {
+public interface JdbiPokemonRepository {
     @SqlUpdate
-    @GetGeneratedKeys
-    Long save(@BindBean TypePokemon type);
+    void insert(@BindBean Pokemon pokemon);
 
     @SqlUpdate
-    void saveTypePokemon(@Bind("pokemonNumber") Long number, @Bind("type") String type);
+    void update(@BindBean Pokemon pokemon);
+
+    @SqlQuery //operação de consulta-seleção
+    @RegisterRowMapper(PokemonRowMapper.class)
+    Optional<Pokemon> findByNumber(@Bind("number") Long number);
 
     @SqlQuery
-    @RegisterRowMapper(TypePokemonRowMapper.class)
-    Optional<TypePokemon> findByName(String typeName);
+    @RegisterRowMapper(PokemonRowMapper.class)
+    Optional<Pokemon> findByName(@Bind("name") String name);
 }

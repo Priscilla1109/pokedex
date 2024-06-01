@@ -1,5 +1,5 @@
 INSERT INTO evolution_detail (
-  self_id,
+  pokemon_id,
   evolution_id,
   min_level,
   trigger_name)

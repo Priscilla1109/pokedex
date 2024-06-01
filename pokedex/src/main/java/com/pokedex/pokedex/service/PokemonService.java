@@ -2,7 +2,7 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
-import com.pokedex.pokedex.repository.EvolutionRepository;
+import com.pokedex.pokedex.repository.EvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import com.pokedex.pokedex.repository.TypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,33 +25,55 @@ public class PokemonService {
     private TypeRepository typeRepository;
 
     @Autowired
-    private EvolutionRepository evolutionRepository;
+    private EvolutionDetailRepository evolutionDetailRepository;
 
     @Transactional
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
-        // Verificar se o Pokémon já existe na Pokédex
-        PokemonResponse pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponse);
 
-        List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponses);
+        for (EvolutionDetail evolutionDetail : evolutionDetails){
+            Pokemon saveSelf = savePokemon(evolutionDetail.getSelf());
+            savePokemonTypes(saveSelf);
+            evolutionDetail.setSelf(saveSelf);
 
-        evolutionDetails.forEach(evolutionDetail -> {
-            Pokemon self = pokemonRepository.save(evolutionDetail.getSelf());
-            evolutionDetail.setEvolution(self);
-            Pokemon evolution = pokemonRepository.save(evolutionDetail.getEvolution());
-            evolutionDetail.setEvolution(evolution);
-            evolutionRepository.save(evolutionDetail);
+            Pokemon saveEvolution = savePokemon(evolutionDetail.getEvolution());
+            savePokemonTypes(saveEvolution);
+            evolutionDetail.setEvolution(saveEvolution);
 
-            self.getType().forEach(typeName ->{
-                TypePokemon type = typeRepository.findByName(typeName).orElseGet(() -> {
-                    TypePokemon newType = new TypePokemon();
-                    newType.setName(typeName);
-                    return typeRepository.save(newType);
-                });
-                typeRepository.saveTypePokemon(self.getNumber(), type.getName());
-            });
-        });
-
+            evolutionDetailRepository.save(evolutionDetail);
+        }
         return evolutionDetails;
+    }
+
+    private Pokemon savePokemon(Pokemon pokemon) {
+        Optional<Pokemon> pokemonOpt = pokemonRepository.findByNumber(pokemon.getNumber());
+        pokemonOpt.ifPresentOrElse(
+            existPokemon -> {
+                existPokemon.setName(pokemon.getName());
+                existPokemon.setType(pokemon.getType());
+                pokemonRepository.update(existPokemon);
+            },
+            () -> pokemonRepository.insert(pokemon)
+        );
+        return pokemonRepository.findByNumber(pokemon.getNumber())
+            .orElseThrow(() -> new RuntimeException("Pokemon nt found after save"));
+    }
+
+    private void savePokemonTypes(Pokemon pokemon) {
+        for (String typeName : pokemon.getType()) {
+            Optional<TypePokemon> typePokemonOptional = typeRepository.findByName(typeName);
+
+            TypePokemon type;
+            if (typePokemonOptional.isPresent()){
+                type = typePokemonOptional.get();
+            } else {
+                type = new TypePokemon();
+                type.setName(typeName);
+                Long typeId = typeRepository.save(type);
+            }
+            typeRepository.saveTypePokemon(pokemon.getNumber(), type.getName());
+        }
     }
 
 //    public PokemonPageResponse listPokemons(int page, int pageSize) {

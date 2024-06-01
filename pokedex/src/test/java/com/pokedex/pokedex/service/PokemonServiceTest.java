@@ -5,36 +5,30 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
-import com.pokedex.pokedex.model.PokemonPageResponse;
 import com.pokedex.pokedex.model.PokemonResponse;
-import com.pokedex.pokedex.repository.EvolutionRepository;
-import com.pokedex.pokedex.repository.PokemonRepository;
+import com.pokedex.pokedex.repository.EvolutionDetailRepository;
+import com.pokedex.pokedex.repository.JdbiPokemonRepository;
 import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 public class PokemonServiceTest {
     @Mock
-    private PokemonRepository pokemonRepository;
+    private JdbiPokemonRepository jdbiPokemonRepository;
 
     @Mock
-    private EvolutionRepository evolutionRepository;
+    private EvolutionDetailRepository evolutionDetailRepository;
 
     @Mock
     private PokeApiService pokeApiService;

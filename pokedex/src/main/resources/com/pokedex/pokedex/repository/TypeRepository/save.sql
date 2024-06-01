@@ -1,0 +1,1 @@
+INSERT INTO type (number, name) VALUES (:number, :name);

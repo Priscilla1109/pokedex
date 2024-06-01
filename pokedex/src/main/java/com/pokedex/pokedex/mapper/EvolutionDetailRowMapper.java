@@ -9,6 +9,7 @@ import org.jdbi.v3.core.statement.StatementContext;
 import org.springframework.stereotype.Component;
 
 //Classe usada para mapear os resultados da consulta SQL através do uso do ResultSet para converter em objetos Java
+@Component
 public class EvolutionDetailRowMapper implements RowMapper<EvolutionDetail>{
     @Override
     public EvolutionDetail map(ResultSet rs, StatementContext ctx) throws SQLException {
