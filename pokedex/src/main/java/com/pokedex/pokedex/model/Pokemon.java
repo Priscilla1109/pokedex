@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -16,5 +17,5 @@ public class Pokemon {
     private Long number;
     private String name;
     private String imageUrl;
-    private List<String> type;
+    private List<String> type = new ArrayList<>();
 }

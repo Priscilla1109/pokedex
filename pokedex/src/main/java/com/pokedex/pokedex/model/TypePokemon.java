@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TypePokemon {
-    private Long number;
-    private String name;
+    private Long pokemonNumber;
+    private String type;
 }

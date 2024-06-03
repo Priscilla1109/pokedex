@@ -3,7 +3,11 @@ package com.pokedex.pokedex.mapper;
 import com.pokedex.pokedex.model.Pokemon;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.jdbi.v3.core.mapper.RowMapper;
 import org.jdbi.v3.core.statement.StatementContext;
 import org.springframework.stereotype.Component;
@@ -13,12 +17,28 @@ import org.springframework.stereotype.Component;
 public class PokemonRowMapper implements RowMapper<Pokemon> {
     @Override
     public Pokemon map(ResultSet rs, StatementContext ctx) throws SQLException {
-        Pokemon pokemon = new Pokemon();
-        pokemon.setNumber(rs.getLong("number"));
-        pokemon.setName(rs.getString("name"));
-        pokemon.setImageUrl(rs.getString("image_url"));
+        Map<Long, Pokemon> pokemonMap = new HashMap<>();
 
-        return pokemon;
+        while (rs.next()) {
+            Long number = rs.getLong("number");
+            Pokemon pokemon = pokemonMap.computeIfAbsent(number, k -> {
+                try {
+                    Pokemon p = new Pokemon();
+                    p.setNumber(rs.getLong("number"));
+                    p.setName(rs.getString("name"));
+                    p.setImageUrl(rs.getString("image_url"));
+                    p.setType(new ArrayList<>());
+                    return p;
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
+            String type = rs.getString("type");
+            if (type != null) {
+                pokemon.getType().add(type);
+            }
+        }
+        return pokemonMap.isEmpty() ? null : pokemonMap.values().iterator().next();
     }
-
 }

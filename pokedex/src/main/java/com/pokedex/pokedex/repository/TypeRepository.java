@@ -20,9 +20,9 @@ public interface TypeRepository {
     Long save(@BindBean TypePokemon type);
 
     @SqlUpdate
-    void saveTypePokemon(@Bind("pokemonNumber") Long number, @Bind("type") String type);
+    void saveTypePokemon(@Bind("pokemonNumber") Long pokemonNumber, @Bind("type") String type);
 
     @SqlQuery
     @RegisterRowMapper(TypePokemonRowMapper.class)
-    Optional<TypePokemon> findByName(String typeName);
+    Optional<TypePokemon> findByType(@Bind("type") String type);
 }

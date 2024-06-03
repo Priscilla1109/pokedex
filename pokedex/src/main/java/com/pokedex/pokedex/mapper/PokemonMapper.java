@@ -2,6 +2,7 @@ package com.pokedex.pokedex.mapper;
 
 import com.pokedex.pokedex.model.*;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,7 +33,8 @@ public class PokemonMapper {
         pokemon.setNumber(pokemonResponse.getNumber());
         pokemon.setName(pokemonResponse.getName());
         pokemon.setImageUrl(pokemonResponse.getImageUrl());
-        pokemon.setType(pokemonResponse.getType());
+        pokemon.setType(Optional.ofNullable(pokemonResponse.getType()).orElse(new ArrayList<>())); // Garantindo que a lista de tipos não seja nula
+
         return pokemon;
     }
 

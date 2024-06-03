@@ -12,8 +12,8 @@ public class TypePokemonRowMapper implements RowMapper<TypePokemon> {
     @Override
     public TypePokemon map(ResultSet rs, StatementContext ctx) throws SQLException {
         return new TypePokemon(
-            rs.getLong("number"),
-            rs.getString("name")
+            rs.getLong("pokemon_number"),
+            rs.getString("type")
         );
     }
 }

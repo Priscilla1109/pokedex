@@ -29,7 +29,7 @@ public class PokemonController {
 
     //Endpoint de Adição de Pokemons:
     @PostMapping("/add/{nameOrNumber}")
-    public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) {
+    public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) throws Throwable {
         List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
 

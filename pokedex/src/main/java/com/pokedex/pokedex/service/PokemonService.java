@@ -28,17 +28,15 @@ public class PokemonService {
     private EvolutionDetailRepository evolutionDetailRepository;
 
     @Transactional
-    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
+    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) throws Throwable {
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponse);
 
-        for (EvolutionDetail evolutionDetail : evolutionDetails){
+        for (EvolutionDetail evolutionDetail : evolutionDetails) {
             Pokemon saveSelf = savePokemon(evolutionDetail.getSelf());
-            savePokemonTypes(saveSelf);
             evolutionDetail.setSelf(saveSelf);
 
             Pokemon saveEvolution = savePokemon(evolutionDetail.getEvolution());
-            savePokemonTypes(saveEvolution);
             evolutionDetail.setEvolution(saveEvolution);
 
             evolutionDetailRepository.save(evolutionDetail);
@@ -46,34 +44,8 @@ public class PokemonService {
         return evolutionDetails;
     }
 
-    private Pokemon savePokemon(Pokemon pokemon) {
-        Optional<Pokemon> pokemonOpt = pokemonRepository.findByNumber(pokemon.getNumber());
-        pokemonOpt.ifPresentOrElse(
-            existPokemon -> {
-                existPokemon.setName(pokemon.getName());
-                existPokemon.setType(pokemon.getType());
-                pokemonRepository.update(existPokemon);
-            },
-            () -> pokemonRepository.insert(pokemon)
-        );
-        return pokemonRepository.findByNumber(pokemon.getNumber())
-            .orElseThrow(() -> new RuntimeException("Pokemon nt found after save"));
-    }
-
-    private void savePokemonTypes(Pokemon pokemon) {
-        for (String typeName : pokemon.getType()) {
-            Optional<TypePokemon> typePokemonOptional = typeRepository.findByName(typeName);
-
-            TypePokemon type;
-            if (typePokemonOptional.isPresent()){
-                type = typePokemonOptional.get();
-            } else {
-                type = new TypePokemon();
-                type.setName(typeName);
-                Long typeId = typeRepository.save(type);
-            }
-            typeRepository.saveTypePokemon(pokemon.getNumber(), type.getName());
-        }
+    private Pokemon savePokemon(Pokemon pokemon) throws Throwable {
+        return pokemonRepository.save(pokemon);
     }
 
 //    public PokemonPageResponse listPokemons(int page, int pageSize) {
