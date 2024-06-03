@@ -10,52 +10,38 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-    @RequiredArgsConstructor
-    public class PokemonRepository {
-        
+@RequiredArgsConstructor
+public class PokemonRepository {
+
     private final JdbiPokemonRepository jdbiPokemonRepository;
     private final TypeRepository typeRepository;
-        
+
     public Pokemon save(final Pokemon pokemon) throws Throwable {
         Optional<Pokemon> pokemonOpt = jdbiPokemonRepository.findByNumber(pokemon.getNumber());
 
         pokemonOpt.ifPresentOrElse(existPokemon -> update(pokemon), () -> insert(pokemon));
 
         // Salvando os tipos antes de buscar novamente
-        savePokemonTypes(pokemon);
-            
+
         return jdbiPokemonRepository.findByNumber(pokemon.getNumber())
             .orElseThrow(() -> new RuntimeException("Failed to save or update the Pokemon"));
     }
 
     public void update(final Pokemon pokemon) {
-            jdbiPokemonRepository.update(pokemon);
-        }
-        
+        //TODO: remover os tipos que nao tiverem no pokemon e inserir os que tem no pokemon e na base não
+        jdbiPokemonRepository.update(pokemon);
+    }
+
     public void insert(final Pokemon pokemon) {
-            jdbiPokemonRepository.insert(pokemon);
-        }
+        jdbiPokemonRepository.insert(pokemon);
+        savePokemonTypes(pokemon);
+    }
 
     private void savePokemonTypes(Pokemon pokemon) {
         List<String> types = pokemon.getType();
-        if (types == null || types.isEmpty()) {
-            throw new IllegalArgumentException("Pokemon type cannot be null or empty");
-        }
 
         for (String typeName : types) {
-            System.out.println("Searching for type: " + typeName);
-            Optional<TypePokemon> typePokemonOptional = typeRepository.findByType(typeName);
-
-            TypePokemon type;
-            if (typePokemonOptional.isPresent()) {
-                type = typePokemonOptional.get();
-            } else {
-                type = new TypePokemon();
-                type.setType(typeName);
-                Long typeId = typeRepository.save(type);
-                type.setPokemonNumber(typeId); // Corrigido para usar o ID correto
-            }
-            typeRepository.saveTypePokemon(pokemon.getNumber(), type.getType());
+            typeRepository.saveTypePokemon(pokemon.getNumber(), typeName);
         }
     }
 }

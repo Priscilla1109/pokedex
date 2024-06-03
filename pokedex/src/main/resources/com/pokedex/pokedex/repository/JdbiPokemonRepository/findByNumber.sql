@@ -1,1 +1,1 @@
-SELECT * FROM pokemon_type WHERE type = :type;
+SELECT * FROM pokemons WHERE number = :number;

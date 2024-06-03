@@ -10,8 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-import org.springframework.transaction.annotation.Transactional;
-
 //Classe que representa as regras de negócio
 @Service
 public class PokemonService {
@@ -27,20 +25,20 @@ public class PokemonService {
     @Autowired
     private EvolutionDetailRepository evolutionDetailRepository;
 
-    @Transactional
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) throws Throwable {
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponse);
 
-        for (EvolutionDetail evolutionDetail : evolutionDetails) {
-            Pokemon saveSelf = savePokemon(evolutionDetail.getSelf());
-            evolutionDetail.setSelf(saveSelf);
+        //TODO: pokemons estão vindos com os types da pokeAPI, necessário revisar para que traga os da base
+        Pokemon saveSelf = savePokemon(evolutionDetails.get(0).getSelf());
 
+        for (EvolutionDetail evolutionDetail : evolutionDetails) {
             Pokemon saveEvolution = savePokemon(evolutionDetail.getEvolution());
             evolutionDetail.setEvolution(saveEvolution);
 
             evolutionDetailRepository.save(evolutionDetail);
         }
+
         return evolutionDetails;
     }
 
