@@ -1,8 +1,8 @@
 package com.pokedex.pokedex.config;
 
-import com.pokedex.pokedex.repository.EvolutionDetailRepository;
+import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.JdbiPokemonRepository;
-import com.pokedex.pokedex.repository.TypeRepository;
+import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import java.util.List;
 import javax.sql.DataSource;
 import org.jdbi.v3.core.Jdbi;
@@ -40,12 +40,12 @@ public class JdbiConfing {
     }
 
     @Bean
-    public EvolutionDetailRepository evolutionRepository(Jdbi jdbi){
-        return jdbi.onDemand(EvolutionDetailRepository.class);
+    public JdbiEvolutionDetailRepository evolutionRepository(Jdbi jdbi){
+        return jdbi.onDemand(JdbiEvolutionDetailRepository.class);
     }
 
     @Bean
-    public TypeRepository typeRepository(Jdbi jdbi){
-        return jdbi.onDemand(TypeRepository.class);
+    public JdbiTypeRepository typeRepository(Jdbi jdbi){
+        return jdbi.onDemand(JdbiTypeRepository.class);
     }
 }

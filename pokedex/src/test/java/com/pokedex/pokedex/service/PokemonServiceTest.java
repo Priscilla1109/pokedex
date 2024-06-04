@@ -11,7 +11,7 @@ import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
 import com.pokedex.pokedex.model.PokemonResponse;
-import com.pokedex.pokedex.repository.EvolutionDetailRepository;
+import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.JdbiPokemonRepository;
 import java.util.Collections;
 import java.util.List;
@@ -28,7 +28,7 @@ public class PokemonServiceTest {
     private JdbiPokemonRepository jdbiPokemonRepository;
 
     @Mock
-    private EvolutionDetailRepository evolutionDetailRepository;
+    private JdbiEvolutionDetailRepository jdbiEvolutionDetailRepository;
 
     @Mock
     private PokeApiService pokeApiService;

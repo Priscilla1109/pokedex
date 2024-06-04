@@ -5,7 +5,6 @@ import com.pokedex.pokedex.model.Pokemon;
 import java.util.List;
 import java.util.Optional;
 
-import com.pokedex.pokedex.model.TypePokemon;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -14,14 +13,12 @@ import org.springframework.stereotype.Repository;
 public class PokemonRepository {
 
     private final JdbiPokemonRepository jdbiPokemonRepository;
-    private final TypeRepository typeRepository;
+    private final JdbiTypeRepository jdbiTypeRepository;
 
     public Pokemon save(final Pokemon pokemon) throws Throwable {
         Optional<Pokemon> pokemonOpt = jdbiPokemonRepository.findByNumber(pokemon.getNumber());
 
         pokemonOpt.ifPresentOrElse(existPokemon -> update(pokemon), () -> insert(pokemon));
-
-        // Salvando os tipos antes de buscar novamente
 
         return jdbiPokemonRepository.findByNumber(pokemon.getNumber())
             .orElseThrow(() -> new RuntimeException("Failed to save or update the Pokemon"));
@@ -29,6 +26,23 @@ public class PokemonRepository {
 
     public void update(final Pokemon pokemon) {
         //TODO: remover os tipos que nao tiverem no pokemon e inserir os que tem no pokemon e na base não
+        List<String> currentTypes = jdbiTypeRepository.findByTypePokemonNumber(pokemon.getNumber());
+        List<String> newTypes = pokemon.getType();
+
+        //remove
+        currentTypes.stream()
+            .filter(type -> !newTypes.contains(type))
+            .forEach(type -> jdbiTypeRepository.deleteTypePokemon(pokemon.getNumber(), type));
+
+        //adiciona novos
+        newTypes.stream()
+            .filter(type -> !newTypes.contains(type))
+            .forEach(type -> {
+                if (!jdbiTypeRepository.existsTypesPokemon(pokemon.getNumber(), type)){
+                    jdbiTypeRepository.saveTypePokemon(pokemon.getNumber(), type);
+                }
+            });
+
         jdbiPokemonRepository.update(pokemon);
     }
 
@@ -41,7 +55,7 @@ public class PokemonRepository {
         List<String> types = pokemon.getType();
 
         for (String typeName : types) {
-            typeRepository.saveTypePokemon(pokemon.getNumber(), typeName);
+            jdbiTypeRepository.saveTypePokemon(pokemon.getNumber(), typeName);
         }
     }
 }

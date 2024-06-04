@@ -30,4 +30,8 @@ public interface JdbiPokemonRepository {
     @SqlQuery
     @UseRowMapper(PokemonRowMapper.class)
     Optional<Pokemon> findByName(@Bind("name") String name);
+
+//    @SqlQuery
+//    @UseRowMapper(PokemonRowMapper.class)
+//    Optional<Pokemon> findByNumberWithTypes(@Bind("number") Long number);
 }

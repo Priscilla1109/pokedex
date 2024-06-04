@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @UseClasspathSqlLocator
-public interface EvolutionDetailRepository {
+public interface JdbiEvolutionDetailRepository {
     @SqlUpdate
     @GetGeneratedKeys
     Long save(@BindBean EvolutionDetail evolutionDetail);

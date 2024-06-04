@@ -2,9 +2,10 @@ package com.pokedex.pokedex.service;
 
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
-import com.pokedex.pokedex.repository.EvolutionDetailRepository;
+
+import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
-import com.pokedex.pokedex.repository.TypeRepository;
+import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,26 +21,31 @@ public class PokemonService {
     private PokeApiService pokeApiService;
 
     @Autowired
-    private TypeRepository typeRepository;
+    private JdbiTypeRepository jdbiTypeRepository;
 
     @Autowired
-    private EvolutionDetailRepository evolutionDetailRepository;
+    private JdbiEvolutionDetailRepository jdbiEvolutionDetailRepository;
 
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) throws Throwable {
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
         List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponse);
 
-        //TODO: pokemons estão vindos com os types da pokeAPI, necessário revisar para que traga os da base
         Pokemon saveSelf = savePokemon(evolutionDetails.get(0).getSelf());
+        saveSelf.setType(loadTypeFromDataBase(saveSelf.getNumber()));
 
         for (EvolutionDetail evolutionDetail : evolutionDetails) {
             Pokemon saveEvolution = savePokemon(evolutionDetail.getEvolution());
+            saveEvolution.setType(loadTypeFromDataBase(saveEvolution.getNumber()));
             evolutionDetail.setEvolution(saveEvolution);
 
-            evolutionDetailRepository.save(evolutionDetail);
+            jdbiEvolutionDetailRepository.save(evolutionDetail);
         }
 
         return evolutionDetails;
+    }
+
+    private List<String> loadTypeFromDataBase(Long pokemonNumber) {
+        return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
     }
 
     private Pokemon savePokemon(Pokemon pokemon) throws Throwable {

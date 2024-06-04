@@ -1,0 +1,1 @@
+DELETE FROM pokemon_type WHERE pokemon_number = :pokemonNumber AND type = :type;
