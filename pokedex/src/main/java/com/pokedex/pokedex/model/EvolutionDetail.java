@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @JsonInclude(Include.NON_NULL)
 public class EvolutionDetail { //detalhes sobre a evolução
 
-    private Long id;
+    private Long pokemonId;
 
     private Pokemon self;
 

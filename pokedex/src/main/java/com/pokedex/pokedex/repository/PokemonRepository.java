@@ -25,7 +25,6 @@ public class PokemonRepository {
     }
 
     public void update(final Pokemon pokemon) {
-        //TODO: remover os tipos que nao tiverem no pokemon e inserir os que tem no pokemon e na base não
         List<String> currentTypes = jdbiTypeRepository.findByTypePokemonNumber(pokemon.getNumber());
         List<String> newTypes = pokemon.getType();
 

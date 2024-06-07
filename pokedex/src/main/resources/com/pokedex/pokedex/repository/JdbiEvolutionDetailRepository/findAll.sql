@@ -1,0 +1,1 @@
+SELECT * FROM evolution_detail LIMIT :limit OFFSET :offset;

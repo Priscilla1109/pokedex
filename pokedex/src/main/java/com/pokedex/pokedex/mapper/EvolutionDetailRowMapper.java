@@ -14,12 +14,12 @@ public class EvolutionDetailRowMapper implements RowMapper<EvolutionDetail>{
     @Override
     public EvolutionDetail map(ResultSet rs, StatementContext ctx) throws SQLException {
         EvolutionDetail evolutionDetail = new EvolutionDetail();
-        evolutionDetail.setId(rs.getLong("id"));
+        evolutionDetail.setPokemonId(rs.getLong("pokemon_id"));
         evolutionDetail.setMinLevel(rs.getInt("min_level"));
         evolutionDetail.setTriggerName(rs.getString("trigger_name"));
 
         Pokemon self = new Pokemon();
-        self.setNumber(rs.getLong("number"));
+        self.setNumber(rs.getLong("pokemon_id"));
         evolutionDetail.setSelf(self);
 
         Pokemon evolution = new Pokemon();

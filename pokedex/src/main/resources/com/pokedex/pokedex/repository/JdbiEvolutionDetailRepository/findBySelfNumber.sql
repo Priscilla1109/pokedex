@@ -1,0 +1,1 @@
+SELECT * FROM evolution_detail ORDER BY pokemon_id = :pokemonId;

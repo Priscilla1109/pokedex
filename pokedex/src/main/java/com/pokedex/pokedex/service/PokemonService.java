@@ -3,10 +3,14 @@ package com.pokedex.pokedex.service;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 
+import com.pokedex.pokedex.repository.EvolutionDetailRepository;
 import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,7 +28,7 @@ public class PokemonService {
     private JdbiTypeRepository jdbiTypeRepository;
 
     @Autowired
-    private JdbiEvolutionDetailRepository jdbiEvolutionDetailRepository;
+    private EvolutionDetailRepository evolutionDetailRepository;
 
     public List<EvolutionDetail> addNewPokemon(String nameOrNumber) throws Throwable {
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
@@ -38,7 +42,7 @@ public class PokemonService {
             saveEvolution.setType(loadTypeFromDataBase(saveEvolution.getNumber()));
             evolutionDetail.setEvolution(saveEvolution);
 
-            jdbiEvolutionDetailRepository.save(evolutionDetail);
+            evolutionDetailRepository.save(evolutionDetail);
         }
 
         return evolutionDetails;
@@ -52,24 +56,25 @@ public class PokemonService {
         return pokemonRepository.save(pokemon);
     }
 
-//    public PokemonPageResponse listPokemons(int page, int pageSize) {
-//        Pageable pageable = PageRequest.of(page, pageSize);
-//        Page<EvolutionDetail> evolutionPage = evolutionRepository.findAll(pageable);
-//
-//        Set<PokemonResponse> pokemonResponses = new HashSet<>();
-//
-//        for (EvolutionDetail evolutionDetail : evolutionPage.getContent()){
-//            Pokemon pokemon = evolutionDetail.getSelf();
-//            PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
-//
-//            List<EvolutionDetail> allEvolutions = evolutionRepository.findBySelf_Number(pokemon.getNumber());
-//            pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
-//            pokemonResponses.add(pokemonResponse);
-//        }
-//
-//        return new PokemonPageResponse(new ArrayList<>(pokemonResponses),
-//                new Meta(evolutionPage.getNumber(), evolutionPage.getSize(), (int) evolutionPage.getTotalElements(), evolutionPage.getTotalPages()));
-//    }
+    public PokemonPageResponse listPokemons(int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page, pageSize);
+        Page<EvolutionDetail> evolutionDetailPage = (Page<EvolutionDetail>) evolutionDetailRepository.findAll(pageable);
+
+        Set<PokemonResponse> pokemonResponses = new HashSet<>();
+
+        for (EvolutionDetail evolutionDetail : evolutionDetailPage.getContent()) {
+            Pokemon pokemon = evolutionDetail.getSelf();
+            PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
+            List<EvolutionDetail> allEvolutions = evolutionDetailRepository.findBySelfNumber(pokemon.getNumber());
+            pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
+            pokemonResponses.add(pokemonResponse);
+        }
+
+        return new PokemonPageResponse(
+            new ArrayList<>(pokemonResponses),
+            new Meta(evolutionDetailPage.getNumber(), evolutionDetailPage.getSize(), (int) evolutionDetailPage.getTotalElements(), evolutionDetailPage.getTotalPages())
+        );
+    }
 //
 //    @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring
 //    public void deletePokemonByNameOrNumber(String nameOrNumber) {

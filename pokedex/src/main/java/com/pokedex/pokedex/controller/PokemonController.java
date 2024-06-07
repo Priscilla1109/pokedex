@@ -37,14 +37,14 @@ public class PokemonController {
     }
 
     //Endpoint de Listagem de Pokemons:
-//    @GetMapping("/pokemons")
-//    public ResponseEntity<PokemonPageResponse> listPokemons(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int pageSize){
-//        PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
-//
-//        return ResponseEntity.ok(pokemonPage);
-//    }
+    @GetMapping("/pokemons")
+    public ResponseEntity<PokemonPageResponse> listPokemons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int pageSize){
+        PokemonPageResponse pokemonPage = pokemonService.listPokemons(page, pageSize);
+
+        return ResponseEntity.ok(pokemonPage);
+    }
 //
 //    //Endpoint de Deleção de Pokemons:
 //    @DeleteMapping("/pokemon/{nameOrNumber}")
