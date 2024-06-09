@@ -102,7 +102,7 @@ public class PokemonServiceTest {
 //        when(pokemonRepository.findByNumber(Constant.NUMBER_BULBASAUR)).thenReturn(pokemon);
 //
 //        verify(pokemonRepository, times(1)).findByNumber(Constant.NUMBER_BULBASAUR);
-//        verify(evolutionRepository, times(1)).deleteBySelfNumber(Constant.NUMBER_BULBASAUR);
+//        verify(evolutionRepository, times(1)).deleteBySelfNumber.sql(Constant.NUMBER_BULBASAUR);
 //        verify(pokemonRepository, times(1)).delete(pokemon);
 //    }
 }

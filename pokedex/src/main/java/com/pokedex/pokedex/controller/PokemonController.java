@@ -45,13 +45,14 @@ public class PokemonController {
 
         return ResponseEntity.ok(pokemonPage);
     }
-//
-//    //Endpoint de Deleção de Pokemons:
-//    @DeleteMapping("/pokemon/{nameOrNumber}")
-//    public ResponseEntity<String> deletePokemonByNameOrNumber(@PathVariable String nameOrNumber){
-//        pokemonService.deletePokemonByNameOrNumber(nameOrNumber);
-//        return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
-//    }
+
+    //Endpoint de Deleção de Pokemons:
+    @DeleteMapping("/pokemon/{pokemonNameOrNumber}")
+    public ResponseEntity<String> deletePokemon(@PathVariable String pokemonNameOrNumber) {
+        pokemonService.deletePokemonByNameOrNumber(pokemonNameOrNumber);
+        return ResponseEntity.ok("Pokemon deleted successfully");
+    }
+
 //
 //    //Endpoint de Busca de Evoluções dos Pokemons:
 //    @GetMapping("/evolutions/{pokemonNumber}")

@@ -40,4 +40,7 @@ public interface JdbiEvolutionDetailRepository {
 
     @SqlQuery
     int countAll();
+
+    @SqlUpdate
+    void deleteBySelfNumber(@Bind("pokemonNumber") Long pokemonNumber);
 }

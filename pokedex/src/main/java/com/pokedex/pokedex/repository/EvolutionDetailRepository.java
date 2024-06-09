@@ -43,4 +43,8 @@ public class EvolutionDetailRepository {
     public int countAll() {
         return jdbiEvolutionDetailRepository.countAll();
     }
+
+    public void deleteBySelfNumber(Long pokemonNumber) {
+        jdbiEvolutionDetailRepository.deleteBySelfNumber(pokemonNumber);
+    }
 }

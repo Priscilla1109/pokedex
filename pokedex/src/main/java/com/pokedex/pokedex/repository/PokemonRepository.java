@@ -57,4 +57,27 @@ public class PokemonRepository {
             jdbiTypeRepository.saveTypePokemon(pokemon.getNumber(), typeName);
         }
     }
+
+    public void deletePokemon(Long pokemonNumber) {
+        jdbiPokemonRepository.deletePokemon(pokemonNumber);
+    }
+
+    public Optional<Pokemon> getPokemonByNameOrNumber(String nameOrNumber) {
+        // Verificar se o parâmetro é um número
+        Long pokemonNumber = null;
+        try {
+            pokemonNumber = Long.parseLong(nameOrNumber);
+        } catch (NumberFormatException e) {
+            // Se não for um número, continuaremos buscando pelo nome
+        }
+
+        // Buscar pelo Pokémon pelo número ou nome
+        if (pokemonNumber != null) {
+            // Se foi passado um número, buscar pelo número
+            return jdbiPokemonRepository.findByNumber(pokemonNumber);
+        } else {
+            // Se foi passado um nome, buscar pelo nome
+            return jdbiPokemonRepository.findByName(nameOrNumber);
+        }
+    }
 }

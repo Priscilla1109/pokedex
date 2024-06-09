@@ -35,4 +35,7 @@ public interface JdbiTypeRepository {
 
     @SqlQuery
     boolean existsTypesPokemon(@Bind("pokemonNumber") Long number, @Bind("type") String type);
+
+    @SqlUpdate
+    void deleteAllTypesOfPokemon(@Bind("pokemonNumber") Long pokemonNumber);
 }

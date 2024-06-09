@@ -1,5 +1,6 @@
 package com.pokedex.pokedex.service;
 
+import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 
@@ -87,18 +88,24 @@ public class PokemonService {
     private List<String> getPokemonTypes(Long pokemonNumber) {
         return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
     }
-//
-//    @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring
-//    public void deletePokemonByNameOrNumber(String nameOrNumber) {
-//        Pokemon pokemon = getPokemonByNameOrNumber(nameOrNumber);
-//        if (pokemon == null) {
-//            throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
-//        }
-//
-//        evolutionRepository.deleteBySelfNumber(pokemon.getNumber());
-//
-//        pokemonRepository.delete(pokemon);
-//    }
+
+    public void deletePokemonByNameOrNumber(String nameOrNumber) {
+        Optional<Pokemon> pokemonOptional = pokemonRepository.getPokemonByNameOrNumber(nameOrNumber);
+
+        // Verifica se o Pokémon foi encontrado
+        if (pokemonOptional.isPresent()) {
+            Pokemon pokemon = pokemonOptional.get();
+
+            // Deleta os detalhes de evolução associados ao Pokémon
+            evolutionDetailRepository.deleteBySelfNumber(pokemon.getNumber());
+
+            // Deleta o Pokémon do banco de dados
+            pokemonRepository.deletePokemon(pokemon.getNumber());
+        } else {
+            throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
+        }
+    }
+
 //
 //    private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
 //        try {

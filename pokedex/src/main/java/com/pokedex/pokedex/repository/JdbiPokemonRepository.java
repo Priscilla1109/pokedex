@@ -31,7 +31,7 @@ public interface JdbiPokemonRepository {
     @UseRowMapper(PokemonRowMapper.class)
     Optional<Pokemon> findByName(@Bind("name") String name);
 
-//    @SqlQuery
-//    @UseRowMapper(PokemonRowMapper.class)
-//    Optional<Pokemon> findByNumberWithTypes(@Bind("number") Long number);
+
+    @SqlUpdate
+    void deletePokemon(@Bind("pokemonNumber") Long pokemonNumber);
 }
