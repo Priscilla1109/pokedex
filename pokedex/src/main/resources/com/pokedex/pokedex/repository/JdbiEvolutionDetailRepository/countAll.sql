@@ -1,0 +1,1 @@
+SELECT COUNT(*) FROM evolution_detail;

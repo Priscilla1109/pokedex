@@ -57,23 +57,35 @@ public class PokemonService {
     }
 
     public PokemonPageResponse listPokemons(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<EvolutionDetail> evolutionDetailPage = (Page<EvolutionDetail>) evolutionDetailRepository.findAll(pageable);
+        int offset = page * pageSize;
+
+        List<EvolutionDetail> evolutionDetails = evolutionDetailRepository.findAll(pageSize, offset);
+        long totalElements = evolutionDetailRepository.countAll();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
 
         Set<PokemonResponse> pokemonResponses = new HashSet<>();
 
-        for (EvolutionDetail evolutionDetail : evolutionDetailPage.getContent()) {
+        for (EvolutionDetail evolutionDetail : evolutionDetails) {
             Pokemon pokemon = evolutionDetail.getSelf();
             PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
+
+            // Obter os tipos do Pokémon
+            List<String> pokemonTypes = getPokemonTypes(pokemon.getNumber());
+            pokemonResponse.setType(pokemonTypes);
+
             List<EvolutionDetail> allEvolutions = evolutionDetailRepository.findBySelfNumber(pokemon.getNumber());
             pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
             pokemonResponses.add(pokemonResponse);
         }
 
         return new PokemonPageResponse(
-            new ArrayList<>(pokemonResponses),
-            new Meta(evolutionDetailPage.getNumber(), evolutionDetailPage.getSize(), (int) evolutionDetailPage.getTotalElements(), evolutionDetailPage.getTotalPages())
+                new ArrayList<>(pokemonResponses),
+                new Meta(page, pageSize, (int) totalElements, totalPages)
         );
+    }
+
+    private List<String> getPokemonTypes(Long pokemonNumber) {
+        return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
     }
 //
 //    @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring

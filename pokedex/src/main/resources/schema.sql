@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS POKEMONS (
 
 -- Criação da tabela EvolutionDetail
 CREATE TABLE IF NOT EXISTS EVOLUTION_DETAIL (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  pokemon_id VARCHAR(255) NOT NULL,
-  evolution_id VARCHAR(255) NOT NULL,
-  trigger_name VARCHAR(255),
+  id BIGINT AUTO_INCREMENT PRIMARY KEY,     -- Identificador único da evolução
+  pokemon_id VARCHAR(255) NOT NULL,         -- Identificador do Pokémon que evolui
+  evolution_id VARCHAR(255) NOT NULL,       -- Identificador do Pokémon evoluído
+  self_number BIGINT NOT NULL,              -- Número do Pokémon que está evoluindo
+  trigger_name VARCHAR(255),                -- Tipo de gatilho da evolução
   min_level INT
 );
 

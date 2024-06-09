@@ -25,7 +25,7 @@ public interface JdbiEvolutionDetailRepository {
 
     @SqlQuery
     @RegisterRowMapper(EvolutionDetailRowMapper.class)
-    List<EvolutionDetail> findAll(Pageable pageable);
+    List<EvolutionDetail> findAll(@Bind("limit") int limit, @Bind("offset") int offset);
 
     @SqlQuery
     @RegisterRowMapper(EvolutionDetailRowMapper.class)
@@ -37,4 +37,7 @@ public interface JdbiEvolutionDetailRepository {
 
     @SqlUpdate
     void update(@BindBean EvolutionDetail evolutionDetail);
+
+    @SqlQuery
+    int countAll();
 }

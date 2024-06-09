@@ -32,11 +32,15 @@ public class EvolutionDetailRepository {
         jdbiEvolutionDetailRepository.update(evolutionDetail);
     }
 
-    public List<EvolutionDetail> findAll(Pageable pageable) {
-        return jdbiEvolutionDetailRepository.findAll(pageable);
+    public List<EvolutionDetail> findAll(int limit, int offset) {
+        return jdbiEvolutionDetailRepository.findAll(limit, offset);
     }
 
     public List<EvolutionDetail> findBySelfNumber(Long selfNumber) {
         return jdbiEvolutionDetailRepository.findBySelfNumber(selfNumber);
+    }
+
+    public int countAll() {
+        return jdbiEvolutionDetailRepository.countAll();
     }
 }
