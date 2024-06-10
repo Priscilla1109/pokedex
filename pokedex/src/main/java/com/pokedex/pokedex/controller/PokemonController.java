@@ -53,11 +53,11 @@ public class PokemonController {
         return ResponseEntity.ok("Pokemon deleted successfully");
     }
 
-//
-//    //Endpoint de Busca de Evoluções dos Pokemons:
-//    @GetMapping("/evolutions/{pokemonNumber}")
-//    public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
-//        PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
-//        return ResponseEntity.ok(pokemonResponse);
-//    }
+
+    //Endpoint de Busca de Evoluções dos Pokemons:
+    @GetMapping("/evolutions/{pokemonNumber}")
+    public ResponseEntity<PokemonResponse> getEvolutionPokemonByNumber(@PathVariable Long pokemonNumber){
+        PokemonResponse pokemonResponse = pokemonService.getEvolutionsByPokemonNumber(pokemonNumber);
+        return ResponseEntity.ok(pokemonResponse);
+    }
 }

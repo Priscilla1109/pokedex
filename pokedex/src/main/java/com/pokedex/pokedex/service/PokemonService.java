@@ -8,6 +8,7 @@ import com.pokedex.pokedex.repository.EvolutionDetailRepository;
 import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import com.pokedex.pokedex.repository.JdbiTypeRepository;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -106,41 +107,27 @@ public class PokemonService {
         }
     }
 
-//
-//    private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
-//        try {
-//            long number = Long.parseLong(nameOrNumber);
-//            return pokemonRepository.findByNumber(number);
-//        } catch (NumberFormatException e) {
-//            return pokemonRepository.findByName(nameOrNumber);
-//        }
-//    }
-//
-//    public Pokemon getPokemonByNumber(Long number) {
-//        Optional<Pokemon> pokemon = pokemonRepository.findById(number);
-//        return pokemon.orElseThrow(NoSuchElementException::new);
-//    }
-//
-//    public PokemonResponse getEvolutionsByPokemonNumber(Long pokemonNumber){
-//        // Verifica se há evoluções para o Pokémon com o número fornecido
-//        List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
-//        if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
-//            return null;
-//        }
-//
-//        EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
-//        Pokemon mainPokemon =mainPokemonDetail.getSelf();
-//
-//        PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
-//        List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
-//        pokemonResponse.setEvolutions(evolutionresponse);
-//
-//        return pokemonResponse;
-//    }
-//
-//    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
-//        return evolutionDetails.stream()
-//            .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
-//            .collect(Collectors.toList());
-//    }
+
+    public PokemonResponse getEvolutionsByPokemonNumber(Long pokemonNumber){
+        // Verifica se há evoluções para o Pokémon com o número fornecido
+        List<EvolutionDetail> evolutionDetail = evolutionDetailRepository.findBySelfNumber(pokemonNumber);
+        if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
+            return null;
+        }
+
+        EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
+        Pokemon mainPokemon = mainPokemonDetail.getSelf();
+
+        PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
+        List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
+        pokemonResponse.setEvolutions(evolutionresponse);
+
+        return pokemonResponse;
+    }
+
+    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
+        return evolutionDetails.stream()
+            .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
+            .collect(Collectors.toList());
+    }
 }
