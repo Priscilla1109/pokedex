@@ -1,5 +1,6 @@
 package com.pokedex.pokedex.service;
 
+import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
@@ -50,11 +51,11 @@ public class PokemonService {
         return evolutionDetails;
     }
 
-    private List<String> loadTypeFromDataBase(Long pokemonNumber) {
+    public List<String> loadTypeFromDataBase(Long pokemonNumber) {
         return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
     }
 
-    private Pokemon savePokemon(Pokemon pokemon) throws Throwable {
+    public Pokemon savePokemon(Pokemon pokemon) throws Throwable {
         return pokemonRepository.save(pokemon);
     }
 

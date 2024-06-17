@@ -8,12 +8,12 @@ public class Meta {
     private int page;
     private int pageSize;
     private int totalPage;
-    private long pageRecors;
+    private long totalElements;
 
     public Meta(int page, int pageSize, int totalPages, long totalElements) {
         this.page = page;
         this.pageSize = pageSize;
         this.totalPage = totalPages;
-        this.pageRecors = totalElements;
+        this.totalElements = totalElements;
     }
 }

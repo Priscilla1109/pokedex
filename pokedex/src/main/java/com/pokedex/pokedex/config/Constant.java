@@ -14,7 +14,7 @@ public class Constant {
     public static final Long NUMBER_IVYSAUR = 2L;
     public static final Long NUMBER_VENUSAUR = 3L;
 
-    public static final List<String> TYPE_BULBASAUR = Arrays.asList("Grass, Poison");
+    public static final List<String> TYPE_BULBASAUR = Arrays.asList("Grass", "Poison");
     public static final List<PokemonResponse> EVOLUTION_BULBASAUR = Arrays.asList(new PokemonResponse());
     public static final String TRIGGER_NAME_BULBASAUR = "level-up";
     public static final int MIN_LEVEL_BULBASAUR = 16;
