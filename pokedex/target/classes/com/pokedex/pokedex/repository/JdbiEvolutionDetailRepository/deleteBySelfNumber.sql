@@ -1,0 +1,1 @@
+DELETE FROM evolution_detail WHERE self_number = :pokemonNumber

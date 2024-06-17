@@ -19,8 +19,8 @@ import com.pokedex.pokedex.model.PokemonResponse;
 import com.pokedex.pokedex.repository.EvolutionDetailRepository;
 import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
+import com.pokedex.pokedex.service.PokeApiService;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,7 +46,7 @@ public class PokemonServiceTest {
     private EvolutionDetailRepository evolutionDetailRepository;
 
     @InjectMocks
-    private  PokemonService pokemonService;
+    private PokemonService pokemonService;
 
     @Test
     public void testAddNewPokemon_Success() throws Throwable {
@@ -68,16 +68,17 @@ public class PokemonServiceTest {
         List<EvolutionDetail> evolutionDetails = new ArrayList<>();
         evolutionDetails.add(evolutionDetail);
 
-        //TODO: LEMBRAR DE NAO MOCKAR A CLASSE QUE ESTÁ SENDO TESTADA, SOMENTE AS DEPENDÊNCIAS
         when(pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR)).thenReturn(pokemonResponse);
-        when(pokemonRepository.save(any(Pokemon.class))).thenReturn(bulbasaur);
+        when(pokemonRepository.save(any(Pokemon.class))).thenReturn(bulbasaur, ivysaur);
 
         List<EvolutionDetail> result = pokemonService.addNewPokemon(Constant.NAME_BULBASAUR);
 
         assertNotNull(result);
         assertEquals(1, result.size());
         assertEquals(Constant.NAME_BULBASAUR, result.get(0).getSelf().getName());
-        //assertEquals(Constant.NAME_IVYSAUR, result.get(0).getEvolution().getName());
+        assertEquals(Constant.NAME_IVYSAUR, result.get(0).getEvolution().getName());
+
+        verify(pokemonRepository, times(1)).save(bulbasaur);
     }
 
     @Test
@@ -123,25 +124,34 @@ public class PokemonServiceTest {
 
     @Test
     public void testGetEvolutionsByPokemonNumber() {
-        EvolutionDetail evolutionDetail = new EvolutionDetail();
-        Pokemon pokemonSelf = new Pokemon();
-        List<EvolutionDetail> evolutionDetails = List.of(evolutionDetail);
+        Pokemon pokemonSelf = new Pokemon(Constant.NUMBER_BULBASAUR, Constant.NAME_BULBASAUR, Constant.IMAGE_URL_BULBASAUR, Constant.TYPE_BULBASAUR);
+        Pokemon pokemonEvolution = new Pokemon(Constant.NUMBER_IVYSAUR, Constant.NAME_IVYSAUR, Constant.IMAGE_URL_BULBASAUR, Constant.TYPE_BULBASAUR);
 
-        pokemonSelf.setNumber(Constant.NUMBER_BULBASAUR);
-        evolutionDetail.setSelf(pokemonSelf);
+        EvolutionDetail selfEvolutionDetail = new EvolutionDetail();
+        selfEvolutionDetail.setSelf(pokemonSelf);
+        selfEvolutionDetail.setEvolution(pokemonEvolution);
 
-        when(evolutionDetailRepository.findBySelfNumber(pokemonSelf.getNumber())).thenReturn(evolutionDetails);
+        List<EvolutionDetail> evolutionDetails = List.of(selfEvolutionDetail);
 
-        //mockStatic(PokemonMapper.class);
-        PokemonResponse mockPokemonResponse = new PokemonResponse();
+        when(evolutionDetailRepository.findBySelfNumber(Constant.NUMBER_BULBASAUR)).thenReturn(evolutionDetails);
 
-        when(PokemonMapper.toResponse(pokemonSelf)).thenReturn(mockPokemonResponse);
-        when(PokemonMapper.toResponseList(evolutionDetails)).thenReturn(new ArrayList<>());
-
-        PokemonResponse response = pokemonService.getEvolutionsByPokemonNumber(pokemonSelf.getNumber());
+        PokemonResponse response = PokemonMapper.toResponse(pokemonSelf);
+        List<PokemonResponse> listEvolutions = pokemonService.getEvolutionsResponse(evolutionDetails);
+        response.setEvolutions(listEvolutions);
+        pokemonService.getEvolutionsByPokemonNumber(response.getNumber());
 
         assertNotNull(response);
         assertEquals(pokemonSelf.getNumber(), response.getNumber());
+        assertEquals(pokemonSelf.getName(), response.getName());
+        assertEquals(pokemonSelf.getImageUrl(), response.getImageUrl());
+        assertEquals(pokemonSelf.getType(), response.getType());
+
+        assertEquals(pokemonEvolution.getNumber(), response.getEvolutions().get(0).getNumber());
+        assertEquals(pokemonEvolution.getName(), response.getEvolutions().get(0).getName());
+        assertEquals(pokemonEvolution.getImageUrl(), response.getEvolutions().get(0).getImageUrl());
+        assertEquals(pokemonEvolution.getType(), response.getEvolutions().get(0).getType());
+
+        verify(evolutionDetailRepository, times(1)).findBySelfNumber(Constant.NUMBER_BULBASAUR);
     }
 
     @Test

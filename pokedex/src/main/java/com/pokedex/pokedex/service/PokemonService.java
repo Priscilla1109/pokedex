@@ -1,19 +1,14 @@
 package com.pokedex.pokedex.service;
 
-import com.pokedex.pokedex.config.Constant;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
 
 import com.pokedex.pokedex.repository.EvolutionDetailRepository;
-import com.pokedex.pokedex.repository.JdbiEvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
 import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -126,7 +121,7 @@ public class PokemonService {
         return pokemonResponse;
     }
 
-    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
+    public List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
         return evolutionDetails.stream()
             .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
             .collect(Collectors.toList());

@@ -2,6 +2,8 @@ package com.pokedex.pokedex.repository;
 
 import com.pokedex.pokedex.model.Pokemon;
 
+import com.pokedex.pokedex.repository.JdbiPokemonRepository;
+import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import java.util.List;
 import java.util.Optional;
 

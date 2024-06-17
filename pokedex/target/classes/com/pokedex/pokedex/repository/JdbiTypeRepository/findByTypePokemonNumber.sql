@@ -1,0 +1,1 @@
+SELECT type FROM pokemon_type WHERE pokemon_number = :pokemonNumber;
