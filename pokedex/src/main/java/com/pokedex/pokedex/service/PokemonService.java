@@ -3,6 +3,8 @@ package com.pokedex.pokedex.service;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
+import com.pokedex.pokedex.repository.EvolutionRepository;
+import com.pokedex.pokedex.repository.PokemonRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

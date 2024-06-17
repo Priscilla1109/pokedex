@@ -14,6 +14,8 @@ import com.pokedex.pokedex.model.EvolutionDetail;
 import com.pokedex.pokedex.model.Pokemon;
 import com.pokedex.pokedex.model.PokemonPageResponse;
 import com.pokedex.pokedex.model.PokemonResponse;
+import com.pokedex.pokedex.repository.EvolutionRepository;
+import com.pokedex.pokedex.repository.PokemonRepository;
 import java.util.Collections;
 import java.util.List;
 
