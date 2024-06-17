@@ -16,6 +16,6 @@ public class MetaTest {
         assertEquals(page, meta.getPage());
         assertEquals(pageSize, meta.getPageSize());
         assertEquals(totalPages, meta.getTotalPage());
-        assertEquals(totalRecors, meta.getPageRecors());
+        assertEquals(totalRecors, meta.getTotalElements());
     }
 }

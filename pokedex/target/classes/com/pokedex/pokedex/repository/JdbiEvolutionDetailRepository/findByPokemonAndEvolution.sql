@@ -1,0 +1,1 @@
+SELECT * FROM evolution_detail WHERE pokemon_id = :pokemonId AND evolution_id = :evolutionId;

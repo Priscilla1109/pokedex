@@ -1,2 +1,12 @@
+com\pokedex\pokedex\model\PokemonRequestTest.class
 com\pokedex\pokedex\PokedexApplicationTests.class
-com\pokedex\pokedex\service\TestPokeApiService.class
+com\pokedex\pokedex\model\MetaTest.class
+com\pokedex\pokedex\controller\PokemonControllerTest.class
+com\pokedex\pokedex\mapper\PokemonMapperTest.class
+com\pokedex\pokedex\model\EvolutionDetailTest.class
+com\pokedex\pokedex\service\PokemonServiceTest.class
+com\pokedex\pokedex\service\PokeApiServiceTest.class
+com\pokedex\pokedex\model\PokemonPageResponseTest.class
+com\pokedex\pokedex\model\PokemonResponseTest.class
+com\pokedex\pokedex\advice\PokemonHandlerExceptionTest.class
+com\pokedex\pokedex\model\PokemonTest.class

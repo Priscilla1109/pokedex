@@ -1,0 +1,1 @@
+INSERT INTO pokemons (number, name, image_url) VALUES (:number, :name, :imageUrl);

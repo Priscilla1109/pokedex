@@ -3,18 +3,15 @@ package com.pokedex.pokedex.service;
 import com.pokedex.pokedex.exception.PokemonNotFoundException;
 import com.pokedex.pokedex.mapper.PokemonMapper;
 import com.pokedex.pokedex.model.*;
-import com.pokedex.pokedex.repository.EvolutionRepository;
+
+import com.pokedex.pokedex.repository.EvolutionDetailRepository;
 import com.pokedex.pokedex.repository.PokemonRepository;
+import com.pokedex.pokedex.repository.JdbiTypeRepository;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-
-import org.springframework.transaction.annotation.Transactional;
 
 //Classe que representa as regras de negócio
 @Service
@@ -26,78 +23,96 @@ public class PokemonService {
     private PokeApiService pokeApiService;
 
     @Autowired
-    private EvolutionRepository evolutionRepository;
+    private JdbiTypeRepository jdbiTypeRepository;
 
-    @Transactional
-    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) {
-        // Verificar se o Pokémon já existe na Pokédex
-        PokemonResponse pokemonResponses = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+    @Autowired
+    private EvolutionDetailRepository evolutionDetailRepository;
 
-        List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponses);
+    public List<EvolutionDetail> addNewPokemon(String nameOrNumber) throws Throwable {
+        PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
+        List<EvolutionDetail> evolutionDetails = PokemonMapper.toDomain(pokemonResponse);
 
-        evolutionDetails.forEach(evolutionDetail -> {
-            evolutionDetail.setSelf(pokemonRepository.save(evolutionDetail.getSelf()));
-            evolutionDetail.setEvolution(pokemonRepository.save(evolutionDetail.getEvolution()));
-            evolutionRepository.save(evolutionDetail);
-        });
+        Pokemon saveSelf = savePokemon(evolutionDetails.get(0).getSelf());
+        saveSelf.setType(loadTypeFromDataBase(saveSelf.getNumber()));
+
+        for (EvolutionDetail evolutionDetail : evolutionDetails) {
+            Pokemon saveEvolution = savePokemon(evolutionDetail.getEvolution());
+            saveEvolution.setType(loadTypeFromDataBase(saveEvolution.getNumber()));
+            evolutionDetail.setEvolution(saveEvolution);
+
+            evolutionDetailRepository.save(evolutionDetail);
+        }
 
         return evolutionDetails;
     }
 
+    public List<String> loadTypeFromDataBase(Long pokemonNumber) {
+        return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
+    }
+
+    public Pokemon savePokemon(Pokemon pokemon) throws Throwable {
+        return pokemonRepository.save(pokemon);
+    }
+
     public PokemonPageResponse listPokemons(int page, int pageSize) {
-        Pageable pageable = PageRequest.of(page, pageSize);
-        Page<EvolutionDetail> evolutionPage = evolutionRepository.findAll(pageable);
+        int offset = page * pageSize;
+
+        List<EvolutionDetail> evolutionDetails = evolutionDetailRepository.findAll(pageSize, offset);
+        long totalElements = evolutionDetailRepository.countAll();
+        int totalPages = (int) Math.ceil((double) totalElements / pageSize);
 
         Set<PokemonResponse> pokemonResponses = new HashSet<>();
 
-        for (EvolutionDetail evolutionDetail : evolutionPage.getContent()){
+        for (EvolutionDetail evolutionDetail : evolutionDetails) {
             Pokemon pokemon = evolutionDetail.getSelf();
             PokemonResponse pokemonResponse = PokemonMapper.toResponse(pokemon);
 
-            List<EvolutionDetail> allEvolutions = evolutionRepository.findBySelf_Number(pokemon.getNumber());
+            // Obter os tipos do Pokémon
+            List<String> pokemonTypes = getPokemonTypes(pokemon.getNumber());
+            pokemonResponse.setType(pokemonTypes);
+
+            List<EvolutionDetail> allEvolutions = evolutionDetailRepository.findBySelfNumber(pokemon.getNumber());
             pokemonResponse.setEvolutions(PokemonMapper.toResponseList(allEvolutions));
             pokemonResponses.add(pokemonResponse);
         }
 
-        return new PokemonPageResponse(new ArrayList<>(pokemonResponses),
-                new Meta(evolutionPage.getNumber(), evolutionPage.getSize(), (int) evolutionPage.getTotalElements(), evolutionPage.getTotalPages()));
+        return new PokemonPageResponse(
+                new ArrayList<>(pokemonResponses),
+                new Meta(page, pageSize, (int) totalElements, totalPages)
+        );
     }
 
-    @Transactional //garantir que ele seja executado dentro de uma transação gerenciada pelo Spring
+    private List<String> getPokemonTypes(Long pokemonNumber) {
+        return jdbiTypeRepository.findByTypePokemonNumber(pokemonNumber);
+    }
+
     public void deletePokemonByNameOrNumber(String nameOrNumber) {
-        Pokemon pokemon = getPokemonByNameOrNumber(nameOrNumber);
-        if (pokemon == null) {
+        Optional<Pokemon> pokemonOptional = pokemonRepository.getPokemonByNameOrNumber(nameOrNumber);
+
+        // Verifica se o Pokémon foi encontrado
+        if (pokemonOptional.isPresent()) {
+            Pokemon pokemon = pokemonOptional.get();
+
+            // Deleta os detalhes de evolução associados ao Pokémon
+            evolutionDetailRepository.deleteBySelfNumber(pokemon.getNumber());
+
+            // Deleta o Pokémon do banco de dados
+            pokemonRepository.deletePokemon(pokemon.getNumber());
+        } else {
             throw new PokemonNotFoundException("Pokemon with name or number " + nameOrNumber + " not found.");
         }
-
-        evolutionRepository.deleteBySelfNumber(pokemon.getNumber());
-
-        pokemonRepository.delete(pokemon);
     }
 
-    private Pokemon getPokemonByNameOrNumber(String nameOrNumber){
-        try {
-            long number = Long.parseLong(nameOrNumber);
-            return pokemonRepository.findByNumber(number);
-        } catch (NumberFormatException e) {
-            return pokemonRepository.findByName(nameOrNumber);
-        }
-    }
-
-    public Pokemon getPokemonByNumber(Long number) {
-        Optional<Pokemon> pokemon = pokemonRepository.findById(number);
-        return pokemon.orElseThrow(NoSuchElementException::new);
-    }
 
     public PokemonResponse getEvolutionsByPokemonNumber(Long pokemonNumber){
         // Verifica se há evoluções para o Pokémon com o número fornecido
-        List<EvolutionDetail> evolutionDetail = evolutionRepository.findBySelf_Number(pokemonNumber);
+        List<EvolutionDetail> evolutionDetail = evolutionDetailRepository.findBySelfNumber(pokemonNumber);
         if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
             return null;
         }
 
         EvolutionDetail mainPokemonDetail = evolutionDetail.get(0);
-        Pokemon mainPokemon =mainPokemonDetail.getSelf();
+        Pokemon mainPokemon = mainPokemonDetail.getSelf();
 
         PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
         List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
@@ -106,7 +121,7 @@ public class PokemonService {
         return pokemonResponse;
     }
 
-    private List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
+    public List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
         return evolutionDetails.stream()
             .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
             .collect(Collectors.toList());

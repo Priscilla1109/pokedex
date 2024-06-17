@@ -5,7 +5,6 @@ import com.pokedex.pokedex.model.*;
 import com.pokedex.pokedex.service.PokeApiService;
 import com.pokedex.pokedex.service.PokemonService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +28,7 @@ public class PokemonController {
 
     //Endpoint de Adição de Pokemons:
     @PostMapping("/add/{nameOrNumber}")
-    public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) {
+    public ResponseEntity<PokemonResponse> addNewPokemon(@PathVariable String nameOrNumber) throws Throwable {
         List<EvolutionDetail> evolutionDetails = pokemonService.addNewPokemon(nameOrNumber);
         PokemonResponse pokemonResponse = pokeApiService.getPokemonNameOrNumber(nameOrNumber);
 
@@ -47,11 +46,12 @@ public class PokemonController {
     }
 
     //Endpoint de Deleção de Pokemons:
-    @DeleteMapping("/pokemon/{nameOrNumber}")
-    public ResponseEntity<String> deletePokemonByNameOrNumber(@PathVariable String nameOrNumber){
-        pokemonService.deletePokemonByNameOrNumber(nameOrNumber);
-        return new ResponseEntity<>("Pokemons deletado com sucesso!", HttpStatus.OK);
+    @DeleteMapping("/pokemon/{pokemonNameOrNumber}")
+    public ResponseEntity<String> deletePokemon(@PathVariable String pokemonNameOrNumber) {
+        pokemonService.deletePokemonByNameOrNumber(pokemonNameOrNumber);
+        return ResponseEntity.ok("Pokemon deleted successfully");
     }
+
 
     //Endpoint de Busca de Evoluções dos Pokemons:
     @GetMapping("/evolutions/{pokemonNumber}")

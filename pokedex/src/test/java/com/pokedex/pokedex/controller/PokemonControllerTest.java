@@ -13,8 +13,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.List;
-
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -42,7 +40,7 @@ public class PokemonControllerTest {
     }
 
     @Test
-    public void testAddNewPokemon_Success() throws Exception{
+    public void testAddNewPokemon_Success() throws Throwable {
         PokemonResponse pokemonResponse = new PokemonResponse();
 
         when(pokeApiService.getPokemonNameOrNumber(Constant.NAME_BULBASAUR)).thenReturn(pokemonResponse);

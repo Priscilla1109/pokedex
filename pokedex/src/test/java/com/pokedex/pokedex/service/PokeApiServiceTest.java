@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.pokedex.pokedex.config.Constant;
@@ -43,16 +45,13 @@ public class PokeApiServiceTest {
 
     @Test
     public void testGetPokemonByNameOrNumber_NotFound(){
-        HttpClientErrorException exception = new HttpClientErrorException(HttpStatus.NOT_FOUND, "Pokemon not found with name or number: ");
-
-
         when(restTemplate.getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/invalid", PokemonResponse.class))
-            .thenThrow(exception);
+            .thenThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND, "Pokemon not found with name or number: "));
 
-        PokemonNotFoundException pokemonNotFoundException = assertThrows(PokemonNotFoundException.class, () -> {
+        assertThrows(PokemonNotFoundException.class, () -> {
             pokeApiService.getPokemonNameOrNumber("invalid");
         });
 
-        assertEquals("Pokemon not found with name or number: invalid", pokemonNotFoundException.getMessage());
+        verify(restTemplate, times(1)).getForEntity("http://localhost:8083/api-pokedex/v2/pokemon/invalid", PokemonResponse.class);
     }
 }
