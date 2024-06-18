@@ -107,7 +107,7 @@ public class PokemonService {
     public PokemonResponse getEvolutionsByPokemonNumber(Long pokemonNumber){
         // Verifica se há evoluções para o Pokémon com o número fornecido
         List<EvolutionDetail> evolutionDetail = evolutionDetailRepository.findBySelfNumber(pokemonNumber);
-        if (evolutionDetail != null | !evolutionDetail.isEmpty()) {
+        if (evolutionDetail == null || evolutionDetail.isEmpty()) {
             return null;
         }
 
@@ -115,8 +115,8 @@ public class PokemonService {
         Pokemon mainPokemon = mainPokemonDetail.getSelf();
 
         PokemonResponse pokemonResponse = PokemonMapper.toResponse(mainPokemon);
-        List<PokemonResponse> evolutionresponse = getEvolutionsResponse(evolutionDetail);
-        pokemonResponse.setEvolutions(evolutionresponse);
+        List<PokemonResponse> evolutionsResponse = getEvolutionsResponse(evolutionDetail);
+        pokemonResponse.setEvolutions(evolutionsResponse);
 
         return pokemonResponse;
     }
@@ -124,6 +124,7 @@ public class PokemonService {
     public List<PokemonResponse> getEvolutionsResponse(List<EvolutionDetail> evolutionDetails){
         return evolutionDetails.stream()
             .map(detail -> PokemonMapper.toResponse(detail.getEvolution()))
+            //.filter(Objects::nonNull)
             .collect(Collectors.toList());
     }
 }
